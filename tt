@@ -154,7 +154,7 @@ def parse(f, todos):
     # discard.
     # if the line starts with =,#,*,+,- or
     # [number]. followed by a space it's a todo - clear
-    # additional []/[ ]/[x]
+    # additional []/[ ]/[x]. Mark [x] and ~~todo~~ as "done"
     # otherwise
     # it is a note
     def parse_(l, fname):
@@ -196,6 +196,13 @@ def parse(f, todos):
                             done = True
                         l = l.replace(m.group(0), '')
                     (tags, txt) = tagify_1(l)
+                    if txt:
+                        m = re.match("^\s*~~.*~~\s*", txt)
+                        if m:
+                            done = True
+                            txt = txt.split("~~")
+                            txt = txt[1:(len(txt)-1)]
+                            txt = "".join(txt)
                     entry.type = "todo"
                     if tags:
                         entry.tags = tags
