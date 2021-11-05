@@ -250,9 +250,9 @@ def parse(f, todos):
                         return
 
         for line in lines:
-            if "del" in line:
+            if line["type"] == "del":
                 pass
-            elif "note" in line:
+            elif line["type"] == "notes":
                 if len(notes) == 0:
                     if len(todos) > 0:
                         last = todos[len(todos)-1]
