@@ -324,7 +324,9 @@ def load():
     todos = []
     todofiles = get_todo_files()
     for f in todofiles:
-        parse(f, todos)
+        t = []
+        parse(f, t)
+        todos.extend(t)
     return todos
 
 
