@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import sys
+import re
 
 ################################################################################
 # MAIN SECTION
@@ -7,15 +8,51 @@ import sys
 #   understand/
 # main entry point into our program
 def main():
+    c, a, r = processCmdLineArgs()
+    if r:
+        print("ERROR:", r)
+        return
+    if a:
+        c(a)
+    else:
+        c()
+
+
+################################################################################
+# ARGV SECTION
+
+#   understand/
+# handle the command-line arguments and return
+# a tuple of (command, argument, error)
+def processCmdLineArgs():
     if len(sys.argv) == 1:
-        showBriefHelp()
-    elif sys.argv[1] == "-h":
-        showBriefHelp()
-    elif sys.argv[1] == "-hh":
-        showDetailedHelp()
+        return (showBriefHelp, None, "test")
 
+    cmd = sys.argv[1]
 
-main()
+    if not cmd.startswith("-"):
+        return ("search", ' '.join(sys.argv[1:]), None)
+    cmd = re.sub("^-+", "", cmd)
+
+    if cmd == "+":
+        return ("add_todo", ' '.join(sys.argv[1:]), None)
+
+    if cmd == "v":
+        return ("search_verbose", ' '.join(sys.argv[1:]), None)
+
+    if cmd == "x":
+        return ("mark_done", ' '.join(sys.argv[1:]), None)
+
+    if cmd == "t":
+        if len(sys.argv) > 2:
+            return (None, None, '"-t" cannot have any arguments')
+        return ("tag_list", None, None)
+
+    if cmd == "hh" or cmd == "man":
+        return (showDetailedHelp, None, None)
+
+    return (showBriefHelp, None, None)
+
 
 ################################################################################
 # HELP SECTION
@@ -27,7 +64,7 @@ def showBriefHelp():
     $> tt -x :tag search
     $> tt -t
 
-Use -hh to see detailed help
+Use -hh (or --man) to see detailed help
     $> tt -hh
 """)
 
@@ -82,4 +119,6 @@ If you want to manage multiple todo files,
 create a "toodle-o.list" file each line of
 which contains the path to each todo file.""")
 ################################################################################
+
+main()
 
