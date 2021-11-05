@@ -58,12 +58,10 @@ def processCmdLineArgs():
 ################################################################################
 # SEARCH SECTION
 def search_verbose(s):
-    search_(s, True)
+    # TODO
+    pass
 
 def search(s):
-    search_(s, False)
-
-def search_(s, verbose):
     todos = load()
     for t in todos:
         print(t)
@@ -217,13 +215,19 @@ def parse(f, todos):
     # join the notes and add tags of higher indents
     def join_1(lines):
         notes = []
+        tags = []
 
         def add_pending_notes_1():
             nonlocal notes
+            nonlocal tags
             n = '\n'.join(notes).strip()
             if n:
-                todos.append({ "fname": f, "notes": n })
+                line = { "fname": f, "notes": n }
+                if len(tags) > 0:
+                    line["tags"] = tags
+                todos.append(line)
             notes = []
+            tags = []
 
         def update_tags_1(line):
             indent = line.get("indent", 0)
@@ -242,6 +246,11 @@ def parse(f, todos):
             if "del" in line:
                 pass
             elif "note" in line:
+                if len(notes) == 0:
+                    if len(todos) > 0:
+                        last = todos[len(todos)-1]
+                        if "tags" in last:
+                            tags = last["tags"]
                 notes.append(line["note"])
             else:
                 add_pending_notes_1()
