@@ -72,27 +72,29 @@ Implement Toodle-O
 
 The nested elements are indented using tabs so they can be easily piped for further processing if you only want the top level etc.
 
-We can see more details (including the file name) with the verbose tag:
+We can see more details (including `later` and `done` entries along with the file name) with the verbose tag:
 
 ```sh
 $> tt -v :toodle-o
-Release Toodle-O
-Implement Toodle-O
-	Write Parser
-	Write Command-Line Interface
-Write toodle-o's command line in python because it's pretty ideal for little utilites like this.
-At some point port it to the web?
+    	Release Toodle-O (toodle-o)
+DONE	Write Readme (toodle-o)
+    	Implement Toodle-O (toodle-o)
+     		Write Parser (toodle-o)
+     		Write Command-Line Interface (toodle-o)
+    	Write toodle-o's command line in python because it's pretty ideal for little utilites like this.
+    	At some point port it to the web?
+LATER	Web Version (toodle-o)
 
 /my/projects/toodle-o/todo.txt
 $> tt -v :shopping
-Buy Eggs (shopping,supermarket)
-Butter (supermarket+shopping)
-Cheese (shopping)
-Pencils (supermarket)
-Chicken (supermarket)
-Bread (shopping)
-Bacon (shopping)
-Rice (supermarket)
+    	Buy Eggs (shopping,supermarket)
+    	Butter (supermarket+shopping)
+    	Cheese (shopping)
+    	Pencils (supermarket)
+    	Chicken (supermarket)
+    	Bread (shopping)
+    	Bacon (shopping)
+    	Rice (supermarket)
 
 /my/shopping/list.txt
 /my/todo/list.txt
