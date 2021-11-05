@@ -66,14 +66,20 @@ def search(s):
     files = set()
     for entry in todos:
         files.add(entry.fname)
+        status = "    "
+        if entry.tags and "later" in entry.tags:
+            status = "LATER"
+        if entry.done:
+            status = "DONE"
         if entry.type == "note":
-            print(entry.note)
+            print(status + "\t" + entry.note)
         elif entry.type == "todo":
             if entry.item:
+                indent = "\t" * entry.ndnt()
+                tags = ""
                 if entry.tags:
-                    print("{0}{1} ({2})".format("  " * entry.ndnt(), entry.item, ",".join(entry.tags)))
-                else:
-                    print("{0}{1}".format("  " * entry.ndnt(), entry.item))
+                    tags = "\t({0})".format(",".join(entry.tags))
+                print("{0}\t{1}{2}{3}".format(status,indent, entry.item, tags))
         else:
             print(entry)
             raise Exception('Did not understand type: ' + entry.type)
