@@ -124,10 +124,14 @@ def parse(f, todos):
     # mark the number of leading spaces as "indent" and
     # discard.
     # if the line starts with =,#,*,+,- or
-    # [number]. followed by a space it's a todo
+    # [number]. followed by a space it's a todo - clear
+    # additional []/[ ]/[x]
     # otherwise
     # it is a note
     def parse_(l, fname):
+        done = False
+        note = l
+        indent = 0
         ret = {
             #"orig": l,
             "fname": f,
@@ -136,17 +140,54 @@ def parse(f, todos):
         todo = type_1("^\s*(=+)\s+(.*?)(=+)\s*$", l)
         if todo:
             ret.update(todo)
-            todos.append(ret)
-            return
+            return ret
         todo = type_1("^\s*(#+)\s+(.*?)(#*)\s*$", l)
         if todo:
             ret.update(todo)
-            todos.append(ret)
-            return
+            return ret
 
-        ret["note"] = l
-        todos.append(ret)
+        if len(l) > 0 and (l[0] == 'x' or l[0] == 'X'):
+            l = l[1:]
+            done = True
 
+        m = re.match("^\s+", l)
+        if m:
+            indent = len(m.group(0))
+
+        l = l.strip()
+        if len(l) > 0:
+            m = re.match("^[=#*+-]\s", l)
+            if not m:
+                m = re.match("^[0-9]+[.]\s", l)
+            if m:
+                l = l[len(m.group(0)):]
+                l = re.sub("\[[-.x ]?\]", "", l, re.I)
+                (tags, txt) = tagify_1(l)
+                if tags:
+                    ret["tags"] = tags
+                if txt:
+                    ret["item"] = txt
+                if done:
+                    ret["done"] = done
+                if indent > 0:
+                    ret["indent"] = indent
+                return ret
+
+
+        ret["note"] = note
+        return ret
+
+
+    def tagify_1(l):
+        tags = []
+        rx = ":([^\s]+):?"
+        m = re.match(rx, l)
+        while m:
+            tags.append(m.group(1))
+            l = l.replace(m.group(0), '')
+            m = re.match(rx, l)
+        txt = l.strip()
+        return (tags, txt)
 
     def type_1(rx, l):
         m = re.match(rx, l)
@@ -162,13 +203,17 @@ def parse(f, todos):
         ret = {
             "tags": [ re.sub("\s+", "-", txt).lower() ]
         }
+        indent = len(m1) - 1
+        if indent > 0:
+            ret["indent"] = indent
         return ret
 
 
 
     with open(f) as t:
         for line in t:
-            parse_(line.rstrip(), f)
+            l = parse_(line.rstrip(), f)
+            todos.append(l)
 
 
 ################################################################################
