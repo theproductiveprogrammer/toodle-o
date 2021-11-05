@@ -49,7 +49,7 @@ If no such file is found, we default to `todo.txt`.
 Let’s link our `toodle-o` command-line script to the short form `tt` for easy typing in the examples below. To add a new Todo, start with a `+`:
 
 ```sh
-$> tt + add a new todo with priority :project :+1
+$> tt + add a new todo :project
 $> tt + :shopping bread
 ```
 
@@ -108,6 +108,13 @@ Cheese
 Bread
 ```
 
+And to find items without any tags:
+
+```sh
+$> tt :
+Write a todo list
+```
+
 To get the list of tags:
 
 ```sh
@@ -118,12 +125,14 @@ $> tt -t
 :toodle-o
 ```
 
-And to find items without any tags:
+To mark matching items as completed:
 
 ```sh
-$> tt :
-Write a todo list
+$> tt -x :shopping eggs
+x Eggs
 ```
+
+
 
 ----
 
