@@ -181,7 +181,7 @@ def parse(f, todos):
                     return ret
 
 
-        ret["type"] = "note"
+        ret["type"] = "notes"
         ret["note"] = note
         return ret
 
