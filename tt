@@ -63,7 +63,9 @@ def search_verbose(s):
 
 def search(s):
     todos = load()
+    files = set()
     for t in todos:
+        files.add(t["fname"])
         if t["type"] == "notes":
             print(t["notes"])
         elif t["type"] == "todo":
@@ -76,6 +78,9 @@ def search(s):
         else:
             print(t)
             raise Exception('Did not understand type: ' + t["type"])
+    print("\n")
+    for fname in files:
+        print(fname)
 
 ################################################################################
 # ENGINE SECTION
