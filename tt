@@ -1,2 +1,85 @@
 #!/usr/bin/env python3
-print('Hello World!')
+import sys
+
+################################################################################
+# MAIN SECTION
+
+#   understand/
+# main entry point into our program
+def main():
+    if len(sys.argv) == 1:
+        showBriefHelp()
+    elif sys.argv[1] == "-h":
+        showBriefHelp()
+    elif sys.argv[1] == "-hh":
+        showDetailedHelp()
+
+
+main()
+
+################################################################################
+# HELP SECTION
+def showBriefHelp():
+    print("""tt: Toodle-O TODO Manager
+    $> tt + add todo :tag
+    $> tt :tag
+    $> tt -v :tag
+    $> tt -x :tag search
+    $> tt -t
+
+Use -hh to see detailed help
+    $> tt -hh
+""")
+
+
+def showDetailedHelp():
+    print("""tt: Toodle-O TODO Manager
+
+Add a new todo (+)
+    $> tt + add a new todo
+
+Add a new todo with tags (:)
+    $> tt + buy bread :joes :shopping
+
+Find todo's matching a tag
+    $> tt :shopping
+    buy bread
+
+Find todo's which don't have tags
+    $> tt :
+    add a new todo
+
+
+Use :tag1+tag2 to associate two tags
+    $> tt + buy wine :bws+shopping
+
+Now searching will bring up both
+    $> tt :shopping
+    buy bread
+    buy wine
+
+You can restrict the search using (:tag:)
+    $> tt :bws:
+    buy wine
+
+Use the special :later: tag to hide items
+that will not be shown until you explicitly search
+for it:
+    $> tt :project :later:
+
+
+Add the -v (verbose) to get more details
+    $> tt :tag -v
+
+And -t (tags) to get the list of tags
+    $> tt -t
+
+And -x (done) to mark matching items as complete
+    $> tt -x :shopping bread
+    x buy bread
+
+If you want to manage multiple todo files,
+create a "toodle-o.list" file each line of
+which contains the path to each todo file.""")
+################################################################################
+
