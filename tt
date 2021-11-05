@@ -26,7 +26,7 @@ def main():
 # a tuple of (command, argument, error)
 def processCmdLineArgs():
     if len(sys.argv) == 1:
-        return (showBriefHelp, None, "test")
+        return (showBriefHelp, None)
 
     cmd = sys.argv[1]
 
