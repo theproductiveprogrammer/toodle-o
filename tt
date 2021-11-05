@@ -132,7 +132,7 @@ def parse(f, todos):
         note = l
         indent = 0
         ret = {
-            #"orig": l,
+            "orig": l,
             "fname": f,
         }
 
