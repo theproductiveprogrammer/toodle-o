@@ -64,7 +64,8 @@ def search(s):
 
 def search_(s, verbose):
     todos = load()
-    print(todos)
+    for t in todos:
+        print(t)
 
 ################################################################################
 # ENGINE SECTION
@@ -75,9 +76,99 @@ def get_todo_files():
     conf = os.path.join(os.path.dirname(__file__), "toodle-o.list")
     if os.path.exists(conf):
         with open(conf) as f:
-            return f.readlines()
+            return [line.strip() for line in f.readlines()]
     return ["todo.txt"]
 
+#       way/
+# read file and parse each line
+def parse(f, todos):
+
+    #       problem/
+    # parse line by it's type
+    #
+    #   todos:
+    #       *
+    #       -
+    #       +
+    #       #
+    #       - [ ]
+    #       = Tag =
+    #       1.
+    #       2.
+    #   otherwise notes
+    #
+    # and recognize it's indent
+    #   * ...
+    #     * ...
+    #   # ...
+    #   ## ...
+    #   == Tag ==
+    #
+    # and recognize the "done"
+    #   x+ ...
+    #   x3. ...
+    #   - [X]
+    #
+    # and the tags
+    #   + ... :tag :tag
+    #
+    #
+    #       way/
+    # if line matches
+    #       == tag name ==
+    #       ## tag name ##
+    # use that as a `:tag-name` and indent for a todo
+    # otherwise
+    # if line starts with `x` mark as "done" and
+    # discard.
+    # mark the number of leading spaces as "indent" and
+    # discard.
+    # if the line starts with =,#,*,+,- or
+    # [number]. followed by a space it's a todo
+    # otherwise
+    # it is a note
+    def parse_(l, fname):
+        ret = {
+            #"orig": l,
+            "fname": f,
+        }
+
+        todo = type_1("^\s*(=+)\s+(.*?)(=+)\s*$", l)
+        if todo:
+            ret.update(todo)
+            todos.append(ret)
+            return
+        todo = type_1("^\s*(#+)\s+(.*?)(#*)\s*$", l)
+        if todo:
+            ret.update(todo)
+            todos.append(ret)
+            return
+
+        ret["note"] = l
+        todos.append(ret)
+
+
+    def type_1(rx, l):
+        m = re.match(rx, l)
+        if not m:
+            return None
+        m1 = m.group(1)
+        m2 = m.group(3)
+        if m2 and m1 != m2:
+            return None
+        txt = m.group(2).strip()
+        if not txt:
+            return None
+        ret = {
+            "tags": [ re.sub("\s+", "-", txt).lower() ]
+        }
+        return ret
+
+
+
+    with open(f) as t:
+        for line in t:
+            parse_(line.rstrip(), f)
 
 
 ################################################################################
@@ -88,7 +179,8 @@ def get_todo_files():
 def load():
     todos = []
     todofiles = get_todo_files()
-    todos = todofiles
+    for f in todofiles:
+        parse(f, todos)
     return todos
 
 
