@@ -8,14 +8,14 @@ import re
 #   understand/
 # main entry point into our program
 def main():
-    c, a, r = processCmdLineArgs()
-    if r:
-        print("ERROR:", r)
-        return
-    if a:
-        c(a)
-    else:
-        c()
+    try:
+        c, ar = processCmdLineArgs()
+        if ar:
+            c(ar)
+        else:
+            c()
+    except Exception as e:
+        print(str(e))
 
 
 ################################################################################
@@ -31,27 +31,27 @@ def processCmdLineArgs():
     cmd = sys.argv[1]
 
     if not cmd.startswith("-"):
-        return ("search", ' '.join(sys.argv[1:]), None)
+        return ("search", ' '.join(sys.argv[1:]))
     cmd = re.sub("^-+", "", cmd)
 
     if cmd == "+":
-        return ("add_todo", ' '.join(sys.argv[1:]), None)
+        return ("add_todo", ' '.join(sys.argv[1:]))
 
     if cmd == "v":
-        return ("search_verbose", ' '.join(sys.argv[1:]), None)
+        return (search_verbose, ' '.join(sys.argv[1:]))
 
     if cmd == "x":
-        return ("mark_done", ' '.join(sys.argv[1:]), None)
+        return ("mark_done", ' '.join(sys.argv[1:]))
 
     if cmd == "t":
         if len(sys.argv) > 2:
-            return (None, None, '"-t" cannot have any arguments')
-        return ("tag_list", None, None)
+            raise Exception('"-t" cannot have any arguments')
+        return ("tag_list", None)
 
     if cmd == "hh" or cmd == "man":
-        return (showDetailedHelp, None, None)
+        return (showDetailedHelp, None)
 
-    return (showBriefHelp, None, None)
+    return (showBriefHelp, None)
 
 
 ################################################################################
