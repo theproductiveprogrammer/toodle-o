@@ -161,7 +161,7 @@ def parse(f, todos):
             if m:
                 l = l[len(m.group(0)):]
                 if not l:
-                    return { "del" : True }
+                    return { "type" : "del" }
                 if l[0] == ' ':
                     m = re.match("\s*\[([-.x ])?\]", l, re.I)
                     if m:
@@ -169,6 +169,7 @@ def parse(f, todos):
                             done = True
                         l = l.replace(m.group(0), '')
                     (tags, txt) = tagify_1(l)
+                    ret["type"] = "todo"
                     if tags:
                         ret["tags"] = tags
                     if txt:
@@ -180,6 +181,7 @@ def parse(f, todos):
                     return ret
 
 
+        ret["type"] = "note"
         ret["note"] = note
         return ret
 
@@ -207,6 +209,7 @@ def parse(f, todos):
         if not txt:
             return None
         ret = {
+            "type": "todo",
             "tags": [ re.sub("\s+", "-", txt).lower() ]
         }
         indent = len(m1) - 1
@@ -226,7 +229,7 @@ def parse(f, todos):
             nonlocal tags
             n = '\n'.join(notes).strip()
             if n:
-                line = { "fname": f, "notes": n }
+                line = { "fname": f, "type": "notes", "notes": n }
                 if len(tags) > 0:
                     line["tags"] = tags
                 todos.append(line)
