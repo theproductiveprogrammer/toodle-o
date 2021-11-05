@@ -64,26 +64,40 @@ def search_verbose(s):
 def search(s):
     todos = load()
     files = set()
-    for t in todos:
-        files.add(t["fname"])
-        if t["type"] == "notes":
-            print(t["notes"])
-        elif t["type"] == "todo":
-            if "item" in t:
-                indent = t.get("indent", 0)
-                if "tags" in t:
-                    print("{0}{1} ({2})".format("  " * indent,t["item"],",".join(t["tags"])))
+    for entry in todos:
+        files.add(entry.fname)
+        if entry.type == "note":
+            print(entry.note)
+        elif entry.type == "todo":
+            if entry.item:
+                if entry.tags:
+                    print("{0}{1} ({2})".format("  " * entry.ndnt(), entry.item, ",".join(entry.tags)))
                 else:
-                    print("{0}{1}".format("  " * indent,t["item"]))
+                    print("{0}{1}".format("  " * entry.ndnt(), entry.item))
         else:
-            print(t)
-            raise Exception('Did not understand type: ' + t["type"])
+            print(entry)
+            raise Exception('Did not understand type: ' + entry.type)
     print("\n")
     for fname in files:
         print(fname)
 
 ################################################################################
 # ENGINE SECTION
+
+class Entry:
+    def __init__(self, orig, fname):
+        self.orig = orig
+        self.fname = fname
+        self.type = None
+        self.note = None
+        self.item = None
+        self.tags = None
+        self.indent = None
+
+    def ndnt(self):
+        if self.indent:
+            return self.indent
+        return 0
 
 #       way/
 # read the files specified in "toodle-o.list" or default to "todo.txt"
@@ -147,19 +161,15 @@ def parse(f, todos):
         done = False
         note = l
         indent = 0
-        ret = {
-            "orig": l,
-            "fname": f,
-        }
 
-        todo = type_1("^\s*(=+)\s+(.*?)(=+)\s*$", l)
-        if todo:
-            ret.update(todo)
-            return ret
-        todo = type_1("^\s*(#+)\s+(.*?)(#*)\s*$", l)
-        if todo:
-            ret.update(todo)
-            return ret
+        entry = type_1("^\s*(=+)\s+(.*?)(=+)\s*$", l, fname)
+        if entry:
+            return entry
+        entry = type_1("^\s*(#+)\s+(.*?)(#*)\s*$", l, fname)
+        if entry:
+            return entry
+
+        entry = Entry(l, fname)
 
         if len(l) > 0 and (l[0] == 'x' or l[0] == 'X'):
             l = l[1:]
@@ -177,7 +187,8 @@ def parse(f, todos):
             if m:
                 l = l[len(m.group(0)):]
                 if not l:
-                    return { "type" : "del" }
+                    entry.type = "del"
+                    return entry
                 if l[0] == ' ':
                     m = re.match("\s*\[([-.x ])?\]", l, re.I)
                     if m:
@@ -185,21 +196,21 @@ def parse(f, todos):
                             done = True
                         l = l.replace(m.group(0), '')
                     (tags, txt) = tagify_1(l)
-                    ret["type"] = "todo"
+                    entry.type = "todo"
                     if tags:
-                        ret["tags"] = tags
+                        entry.tags = tags
                     if txt:
-                        ret["item"] = txt
+                        entry.item = txt
                     if done:
-                        ret["done"] = done
+                        entry.done = done
                     if indent > 0:
-                        ret["indent"] = indent
-                    return ret
+                        entry.indent = indent
+                    return entry
 
 
-        ret["type"] = "notes"
-        ret["note"] = note
-        return ret
+        entry.type = "note"
+        entry.note = note
+        return entry
 
 
     def tagify_1(l):
@@ -213,7 +224,7 @@ def parse(f, todos):
         txt = l.strip()
         return (tags, txt)
 
-    def type_1(rx, l):
+    def type_1(rx, l, fname):
         m = re.match(rx, l)
         if not m:
             return None
@@ -224,19 +235,18 @@ def parse(f, todos):
         txt = m.group(2).strip()
         if not txt:
             return None
-        ret = {
-            "type": "todo",
-            "tags": [ re.sub("\s+", "-", txt).lower() ]
-        }
+        entry = Entry(l, fname)
+        entry.type = "todo"
+        entry.tags = [ re.sub("\s+", "-", txt).lower() ]
         indent = len(m1) - 1
         if indent > 0:
-            ret["indent"] = indent
-        return ret
+            entry.indent = indent
+        return entry
 
 
     #       way/
     # join the notes and add tags of higher indents
-    def join_1(lines):
+    def join_1(entries):
         notes = []
         tags = []
 
@@ -245,40 +255,41 @@ def parse(f, todos):
             nonlocal tags
             n = '\n'.join(notes).strip()
             if n:
-                line = { "fname": f, "type": "notes", "notes": n }
+                entry = Entry(None, f)
+                entry.type = "note"
+                entry.note = n
                 if len(tags) > 0:
-                    line["tags"] = tags
-                todos.append(line)
+                    entry.tags = tags
+                todos.append(entry)
             notes = []
             tags = []
 
-        def update_tags_1(line):
-            indent = line.get("indent", 0)
-            if indent == 0:
+        def update_tags_1(entry):
+            if entry.ndnt() == 0:
                 return
             for todo in reversed(todos):
-                if "tags" in todo:
-                    if todo.get("indent", 0) < indent:
-                        if "tags" in line:
-                            line["tags"].extend(todo["tags"])
+                if todo.tags:
+                    if todo.ndnt() < entry.ndnt():
+                        if entry.tags:
+                            entry.tags.extend(todo.tags)
                         else:
-                            line["tags"] = todo["tags"]
+                            entry.tags = todo.tags
                         return
 
-        for line in lines:
-            if line["type"] == "del":
+        for entry in entries:
+            if entry.type == "del":
                 pass
-            elif line["type"] == "notes":
+            elif entry.type == "note":
                 if len(notes) == 0:
                     if len(todos) > 0:
                         last = todos[len(todos)-1]
-                        if "tags" in last:
-                            tags = last["tags"]
-                notes.append(line["note"])
+                        if last.tags:
+                            tags = last.tags
+                notes.append(entry.note)
             else:
                 add_pending_notes_1()
-                update_tags_1(line)
-                todos.append(line)
+                update_tags_1(entry)
+                todos.append(entry)
 
         add_pending_notes_1()
 
