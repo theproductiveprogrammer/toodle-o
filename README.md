@@ -38,6 +38,12 @@ At some point port it to the web?
 	* web-version :later:
 ```
 
+## Setup
+
+You can provide a `toodle-o.list` file which contains, one on each line, a list of `todo` files scattered across various directories.
+
+If no such file is found, we default to `todo.txt`.
+
 ## Usage
 
 Let’s link our `toodle-o` command-line script to the short form `tt` for easy typing in the examples below. To add a new Todo, start with a `+`:
@@ -66,7 +72,7 @@ Implement Toodle-O
 
 The nested elements are indented using tabs so they can be easily piped for further processing if you only want the top level etc.
 
-We can see more details with the verbose tag:
+We can see more details (including the file name) with the verbose tag:
 
 ```sh
 $> tt -v :toodle-o
@@ -76,6 +82,8 @@ Implement Toodle-O
 	Write Command-Line Interface
 Write toodle-o's command line in python because it's pretty ideal for little utilites like this.
 At some point port it to the web?
+
+/my/projects/toodle-o/todo.txt
 $> tt -v :shopping
 Buy Eggs (shopping,supermarket)
 Butter (supermarket+shopping)
@@ -83,6 +91,11 @@ Cheese (shopping)
 Pencils (supermarket)
 Chicken (supermarket)
 Bread (shopping)
+Bacon (shopping)
+Rice (supermarket)
+
+/my/shopping/list.txt
+/my/todo/list.txt
 ```
 
 If you want not have any associated items, use the `:tag:` form to search:
