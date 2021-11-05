@@ -64,7 +64,18 @@ def search_verbose(s):
 def search(s):
     todos = load()
     for t in todos:
-        print(t)
+        if t["type"] == "notes":
+            print(t["notes"])
+        elif t["type"] == "todo":
+            if "item" in t:
+                indent = t.get("indent", 0)
+                if "tags" in t:
+                    print("{0}{1} ({2})".format("  " * indent,t["item"],",".join(t["tags"])))
+                else:
+                    print("{0}{1}".format("  " * indent,t["item"]))
+        else:
+            print(t)
+            raise Exception('Did not understand type: ' + t["type"])
 
 ################################################################################
 # ENGINE SECTION
