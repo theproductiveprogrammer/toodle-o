@@ -99,6 +99,7 @@ class Entry:
         self.item = None
         self.tags = None
         self.indent = None
+        self.done = False
 
     def ndnt(self):
         if self.indent:
