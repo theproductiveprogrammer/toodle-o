@@ -225,12 +225,28 @@ def parse(f, todos):
                 todos.append({ "fname": f, "notes": n })
             notes = []
 
+        def update_tags_1(line):
+            indent = line.get("indent", 0)
+            if indent == 0:
+                return
+            for todo in reversed(todos):
+                if "tags" in todo:
+                    if todo.get("indent", 0) < indent:
+                        if "tags" in line:
+                            line["tags"].extend(todo["tags"])
+                        else:
+                            line["tags"] = todo["tags"]
+                        return
 
         for line in lines:
-            if "note" in line:
+            if "del" in line:
+                pass
+            elif "note" in line:
                 notes.append(line["note"])
             else:
                 add_pending_notes_1()
+                update_tags_1(line)
+                todos.append(line)
 
         add_pending_notes_1()
 
