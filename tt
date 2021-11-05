@@ -270,9 +270,6 @@ def parse(f, todos):
         join_1(lines)
 
 
-################################################################################
-# SEARCH SECTION
-
 #       way/
 # parse the todo files and return the todos
 def load():
