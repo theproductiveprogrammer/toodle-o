@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import sys
 import re
+import os
 
 ################################################################################
 # MAIN SECTION
@@ -31,7 +32,7 @@ def processCmdLineArgs():
     cmd = sys.argv[1]
 
     if not cmd.startswith("-"):
-        return ("search", ' '.join(sys.argv[1:]))
+        return (search, ' '.join(sys.argv[1:]))
     cmd = re.sub("^-+", "", cmd)
 
     if cmd == "+":
@@ -52,6 +53,43 @@ def processCmdLineArgs():
         return (showDetailedHelp, None)
 
     return (showBriefHelp, None)
+
+################################################################################
+# SEARCH SECTION
+def search_verbose(s):
+    search_(s, True)
+
+def search(s):
+    search_(s, False)
+
+def search_(s, verbose):
+    todos = load()
+    print(todos)
+
+################################################################################
+# ENGINE SECTION
+
+#       way/
+# read the files specified in "toodle-o.list" or default to "todo.txt"
+def get_todo_files():
+    conf = os.path.join(os.path.dirname(__file__), "toodle-o.list")
+    if os.path.exists(conf):
+        with open(conf) as f:
+            return f.readlines()
+    return ["todo.txt"]
+
+
+
+################################################################################
+# SEARCH SECTION
+
+#       way/
+# parse the todo files and return the todos
+def load():
+    todos = []
+    todofiles = get_todo_files()
+    todos = todofiles
+    return todos
 
 
 ################################################################################
