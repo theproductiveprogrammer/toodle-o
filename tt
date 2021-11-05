@@ -17,6 +17,7 @@ def main():
             c()
     except Exception as e:
         print(str(e))
+        raise
 
 
 ################################################################################
@@ -154,24 +155,27 @@ def parse(f, todos):
         if m:
             indent = len(m.group(0))
 
-        l = l.strip()
+        l = l.lstrip()
         if len(l) > 0:
-            m = re.match("^[=#*+-]\s", l)
+            m = re.match("^[=#*+-]", l)
             if not m:
-                m = re.match("^[0-9]+[.]\s", l)
+                m = re.match("^[0-9]+[.]", l)
             if m:
                 l = l[len(m.group(0)):]
-                l = re.sub("\[[-.x ]?\]", "", l, re.I)
-                (tags, txt) = tagify_1(l)
-                if tags:
-                    ret["tags"] = tags
-                if txt:
-                    ret["item"] = txt
-                if done:
-                    ret["done"] = done
-                if indent > 0:
-                    ret["indent"] = indent
-                return ret
+                if not l:
+                    return { "del" : True }
+                if l[0] == ' ':
+                    l = re.sub("\s*\[[-.x ]?\]", "", l, re.I)
+                    (tags, txt) = tagify_1(l)
+                    if tags:
+                        ret["tags"] = tags
+                    if txt:
+                        ret["item"] = txt
+                    if done:
+                        ret["done"] = done
+                    if indent > 0:
+                        ret["indent"] = indent
+                    return ret
 
 
         ret["note"] = note
@@ -209,11 +213,36 @@ def parse(f, todos):
         return ret
 
 
+    #       way/
+    # join the notes and add tags of higher indents
+    def join_1(lines):
+        notes = []
+
+        def add_pending_notes_1():
+            nonlocal notes
+            n = '\n'.join(notes).strip()
+            if n:
+                todos.append({ "fname": f, "notes": n })
+            notes = []
+
+
+        for line in lines:
+            if "note" in line:
+                notes.append(line["note"])
+            else:
+                add_pending_notes_1()
+
+        add_pending_notes_1()
+
+
+
 
     with open(f) as t:
+        lines = []
         for line in t:
             l = parse_(line.rstrip(), f)
-            todos.append(l)
+            lines.append(l)
+        join_1(lines)
 
 
 ################################################################################
