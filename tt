@@ -66,14 +66,14 @@ def search(s):
     files = set()
     for entry in todos:
         files.add(entry.fname)
-        status = "    "
+        status = "TODO"
         if entry.tags and "later" in entry.tags:
-            status = "LATER"
+            status = "LATR"
         if entry.done:
             status = "DONE"
         if entry.type == "note":
             for line in entry.note.split("\n"):
-                print(status + "\t" + line)
+                print("NOTE\t" + line)
         elif entry.type == "todo":
             if entry.item:
                 indent = "\t" * entry.ndnt()
