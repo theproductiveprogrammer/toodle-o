@@ -62,8 +62,23 @@ def filter(todos, s):
     return todos
 
 def search(s):
-    # TODO
-    pass
+    todos = filter(load(), s)
+    for entry in todos:
+        if entry.tags and "later" in entry.tags:
+            continue
+        if entry.done:
+            continue
+        if entry.type == "note":
+            print(entry.note)
+        elif entry.type == "todo":
+            if entry.item:
+                indent = "\t" * entry.ndnt()
+                print(indent + entry.item)
+        elif entry.type == "heading":
+            pass
+        else:
+            print(entry)
+            raise Exception('Did not understand type: ' + entry.type)
 
 #       way/
 # filter all the todo's then show them
