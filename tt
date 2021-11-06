@@ -100,16 +100,16 @@ def search_verbose(s):
         if entry.type == "note":
             tags = ""
             if entry.tags:
-                tags = "\t({0})".format(",".join(entry.tags))
+                tags = "({0})".format(",".join(entry.tags))
             for line in entry.note.split("\n"):
-                print("NOTE" + tags + "\t" + line)
+                print("NOTE\t" + tags + "\t" + line)
         elif entry.type == "todo":
             if entry.item:
                 indent = "\t" * entry.ndnt()
-                tags = ""
+                tags = "(:)"
                 if entry.tags:
-                    tags = "\t({0})".format(",".join(entry.tags))
-                print("{0}{3}\t{1}{2}".format(status,indent, entry.item, tags))
+                    tags = "({0})".format(",".join(entry.tags))
+                print("{0}\t{3}\t{1}{2}".format(status,indent, entry.item, tags))
         elif entry.type == "heading":
             pass
         else:
