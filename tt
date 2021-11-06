@@ -334,8 +334,8 @@ def parse(f, todos):
                         return
 
                 if todo.type == "todo":
-                    if todo.ndnt() < entry.ndnt():
-                        if entry.type != "heading":
+                    if entry.type != "heading":
+                        if todo.ndnt() < entry.ndnt():
                             entry.addTags(todo.tags)
                             return
 
