@@ -42,6 +42,9 @@ def processCmdLineArgs():
     if cmd == "v":
         return (search_verbose, ' '.join(sys.argv[1:]))
 
+    if cmd == "c" or cmd == "copy":
+        return (search_copy, ' '.join(sys.argv[1:]))
+
     if cmd == "x":
         return ("mark_done", ' '.join(sys.argv[1:]))
 
@@ -82,6 +85,64 @@ def search(s):
         else:
             print(vars(entry))
             raise Exception('Did not understand type: ' + entry.type)
+
+#       way/
+# filter all the todo's then show them
+# in a valid todo format to copy into
+# another file
+def search_copy(s):
+    todos = filter(load(), s)
+    seen = []
+    for entry in todos:
+        seen.append(entry)
+        if entry.type == "note":
+            print(entry.note)
+        elif entry.type == "heading":
+            hdr = "#" * (entry.ndnt()+1)
+            tags = remove_tags_1(seen, entry)
+            tags = " ".join([ t.title() for t in tags])
+            print("{0} {1}".format(hdr, tags))
+        elif entry.type == "todo":
+            indent = "  " * entry.ndnt()
+            done = ""
+            if entry.done:
+                done = "x"
+            tags = remove_tags_1(seen, entry)
+            tags = " ".join([ ":"+t for t in tags])
+            if tags and entry.item:
+                print("{0}{1}* {2} {3}".format(done, indent, entry.item, tags))
+            elif entry.item:
+                print("{0}{1}* {2}".format(done, indent, entry.item))
+            elif tags:
+                print("{0}{1}* {2}".format(done, indent, tags))
+        else:
+            print(vars(entry))
+            raise Exception('Did not understand type: ' + entry.type)
+
+
+def remove_tags_1(seen, entry):
+    tags = set()
+
+    if not entry.tags:
+        return tags
+
+    tags.update(entry.tags)
+
+    for todo in reversed(seen):
+        if todo.type == "heading":
+            if entry.type == "heading":
+                if todo.ndnt() < entry.ndnt():
+                    return tags.difference(todo.tags)
+            else:
+                return tags.difference(todo.tags)
+
+        if todo.type == "todo":
+            if entry.type != "heading":
+                if todo.ndnt() < entry.ndnt():
+                    return tags.difference(todo.tags)
+
+    return tags
+
 
 #       way/
 # filter all the todo's then show them
