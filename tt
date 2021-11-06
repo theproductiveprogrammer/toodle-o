@@ -431,7 +431,7 @@ for it:
 
 
 Add the -v (verbose) to get more details
-    $> tt :tag -v
+    $> tt -v :tag
 
 And -t (tags) to get the list of tags
     $> tt -t
