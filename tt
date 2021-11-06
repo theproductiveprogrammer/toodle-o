@@ -228,7 +228,7 @@ def parse(f, todos):
 
     def tagify_1(l):
         tags = []
-        rx = ":([^\s]+):?"
+        rx = "\b:([^\s]+):?\b"
         m = re.search(rx, l)
         while m:
             tags.append(m.group(1))
