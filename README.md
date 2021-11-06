@@ -75,32 +75,39 @@ The nested elements are indented using tabs so they can be easily piped for furt
 We can see more details (including `later` and `done` entries along with the file name) with the verbose tag:
 
 ```sh
-$> tt -v :toodle-o
-     (toodle-o)	Release Toodle-O
-DONE (toodle-o)	Write Readme
-     (toodle-o)	Implement Toodle-O
-     (toodle-o)		Write Parser
-     (toodle-o)		Write Command-Line Interface
-    	Write toodle-o's command line in python because it's pretty ideal for little utilites like this.
-    	At some point port it to the web?
-LATER (toodle-o)	Web Version
-
-/my/projects/toodle-o/todo.txt
 $> tt -v :shopping
-     (shopping,supermarket)	Buy Eggs
-     (supermarket+shopping)	Butter
-     (shopping)	Cheese
-     (supermarket)	Pencils
-     (supermarket)	Chicken
-     (shopping)	Bread
-     (shopping)	Bacon
-     (supermarket)	Rice
+TODO (shopping,supermarket)	Buy Eggs
+TODO (supermarket+shopping)	Butter
+TODO (shopping)	Cheese
+TODO (supermarket)	Pencils
+TODO (supermarket)	Chicken
+TODO (shopping)	Bread
+TODO (shopping)	Bacon
+TODO (supermarket)	Rice
 
 /my/shopping/list.txt
 /my/todo/list.txt
+
+$> tt -v :toodle-o
+TODO (toodle-o)	Release Toodle-O
+DONE (toodle-o)	Write Readme
+TODO (toodle-o)	Implement Toodle-O
+TODO (toodle-o)		Write Parser
+TODO (toodle-o)		Write Command-Line Interface
+NOTE	Write toodle-o's command line in python because it's pretty ideal for little utilites like this.
+NOTE	At some point port it to the web?
+LATR (toodle-o)	Web Version
+
+/my/projects/toodle-o/todo.txt
 ```
 
-If you want not have any associated items, use the `:tag:` form to search:
+To get EVERYTHING in a dump:
+
+```sh
+$> tt -v
+```
+
+If you want restrict your search to not match any associated items, use the `:tag:` form:
 
 ```sh
 $>tt :shopping:
@@ -110,7 +117,7 @@ Cheese
 Bread
 ```
 
-And to find items without any tags:
+And to find items that do not have any tags:
 
 ```sh
 $> tt :
