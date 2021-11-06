@@ -153,7 +153,7 @@ def parse(f, todos):
     # if line matches
     #       == tag name ==
     #       ## tag name ##
-    # use that as a `:tag-name` and indent for a todo
+    # use that as a `:tag-name` and with a "top-level" (-1) indent
     # otherwise
     # if line starts with `x` mark as "done" and
     # discard.
@@ -252,9 +252,7 @@ def parse(f, todos):
         entry = Entry(l, fname)
         entry.type = "todo"
         entry.tags = [ re.sub("\s+", "-", txt).lower() ]
-        indent = len(m1) - 1
-        if indent > 0:
-            entry.indent = indent
+        entry.indent = -1
         return entry
 
 
@@ -279,8 +277,6 @@ def parse(f, todos):
             tags = []
 
         def update_tags_1(entry):
-            if entry.ndnt() == 0:
-                return
             for todo in reversed(todos):
                 if todo.type != "todo":
                     continue
