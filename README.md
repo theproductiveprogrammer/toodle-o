@@ -76,25 +76,25 @@ We can see more details (including `later` and `done` entries along with the fil
 
 ```sh
 $> tt -v :toodle-o
-    	Release Toodle-O (toodle-o)
-DONE	Write Readme (toodle-o)
-    	Implement Toodle-O (toodle-o)
-     		Write Parser (toodle-o)
-     		Write Command-Line Interface (toodle-o)
+     (toodle-o)	Release Toodle-O
+DONE (toodle-o)	Write Readme
+     (toodle-o)	Implement Toodle-O
+     (toodle-o)		Write Parser
+     (toodle-o)		Write Command-Line Interface
     	Write toodle-o's command line in python because it's pretty ideal for little utilites like this.
     	At some point port it to the web?
-LATER	Web Version (toodle-o)
+LATER (toodle-o)	Web Version
 
 /my/projects/toodle-o/todo.txt
 $> tt -v :shopping
-    	Buy Eggs (shopping,supermarket)
-    	Butter (supermarket+shopping)
-    	Cheese (shopping)
-    	Pencils (supermarket)
-    	Chicken (supermarket)
-    	Bread (shopping)
-    	Bacon (shopping)
-    	Rice (supermarket)
+     (shopping,supermarket)	Buy Eggs
+     (supermarket+shopping)	Butter
+     (shopping)	Cheese
+     (supermarket)	Pencils
+     (supermarket)	Chicken
+     (shopping)	Bread
+     (shopping)	Bacon
+     (supermarket)	Rice
 
 /my/shopping/list.txt
 /my/todo/list.txt
