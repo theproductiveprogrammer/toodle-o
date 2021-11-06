@@ -278,7 +278,9 @@ def parse(f, todos):
         def add_pending_notes_1():
             nonlocal notes
             nonlocal tags
-            n = '\n'.join(notes).strip()
+            n = '\n'.join(notes)
+            n = re.sub("^[\n\r]*", "", n)
+            n = re.sub("[\n\r]*$", "", n)
             if n:
                 entry = Entry(None, f)
                 entry.type = "note"
