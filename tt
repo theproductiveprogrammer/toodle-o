@@ -103,6 +103,14 @@ class Entry:
         self.indent = None
         self.done = False
 
+    def addTags(self, tags):
+        if not tags:
+            return
+        if self.tags:
+            self.tags.extend(tags)
+        else:
+            self.tags = tags
+
     def ndnt(self):
         if self.indent:
             return self.indent
@@ -213,7 +221,7 @@ def parse(f, todos):
                     (tags, txt) = tagify_1(l)
                     entry.type = "todo"
                     if tags:
-                        entry.tags = tags
+                        entry.addTags(tags)
                     if txt:
                         entry.item = txt
                     if done:
@@ -252,7 +260,7 @@ def parse(f, todos):
             return None
         entry = Entry(l, fname)
         entry.type = "heading"
-        entry.tags = [ re.sub("\s+", "-", txt).lower() ]
+        entry.addTags([ re.sub("\s+", "-", txt).lower() ])
         indent = len(m1) - 1
         if indent > 0:
             entry.indent = indent
@@ -275,35 +283,22 @@ def parse(f, todos):
                 entry.type = "note"
                 entry.note = n
                 if len(tags) > 0:
-                    entry.tags = tags
+                    entry.addTags(tags)
                 todos.append(entry)
             notes = []
             tags = []
 
         def update_tags_1(entry):
             for todo in reversed(todos):
+
                 if todo.type == "heading":
                     if entry.type == "heading":
                         if todo.ndnt() < entry.ndnt():
-                            if entry.tags:
-                                entry.tags.extend(todo.tags)
-                            else:
-                                entry.tags = todo.tags
+                            entry.addTags(todo.tags)
+                            return
                     else:
-                        if entry.tags:
-                            entry.tags.extend(todo.tags)
-                        else:
-                            entry.tags = todo.tags
-                    return
-                if todo.type != "todo":
-                    continue
-                if todo.ndnt() < entry.ndnt():
-                    if todo.tags:
-                        if entry.tags:
-                            entry.tags.extend(todo.tags)
-                        else:
-                            entry.tags = todo.tags
-                    return
+                        entry.addTags(todo.tags)
+                        return
 
         for entry in entries:
             if entry.type == "del":
