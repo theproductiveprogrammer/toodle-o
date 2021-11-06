@@ -72,7 +72,8 @@ def search(s):
         if entry.done:
             status = "DONE"
         if entry.type == "note":
-            print(status + "\t" + entry.note)
+            for line in entry.note.split("\n"):
+                print(status + "\t" + line)
         elif entry.type == "todo":
             if entry.item:
                 indent = "\t" * entry.ndnt()
