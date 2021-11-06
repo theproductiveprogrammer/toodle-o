@@ -282,13 +282,15 @@ def parse(f, todos):
             if entry.ndnt() == 0:
                 return
             for todo in reversed(todos):
-                if todo.tags:
-                    if todo.ndnt() < entry.ndnt():
+                if todo.type != "todo":
+                    continue
+                if todo.ndnt() < entry.ndnt():
+                    if todo.tags:
                         if entry.tags:
                             entry.tags.extend(todo.tags)
                         else:
                             entry.tags = todo.tags
-                        return
+                    return
 
         for entry in entries:
             if entry.type == "del":
