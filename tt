@@ -57,12 +57,20 @@ def processCmdLineArgs():
 
 ################################################################################
 # SEARCH SECTION
+
+def filter(todos, s):
+    return todos
+
 def search(s):
     # TODO
     pass
 
+#       way/
+# filter all the todo's then show them
+# in a nice output along with all
+# the filenames
 def search_verbose(s):
-    todos = load()
+    todos = filter(load(), s)
     files = set()
     for entry in todos:
         files.add(entry.fname)
