@@ -433,6 +433,9 @@ for it:
 Add the -v (verbose) to get more details
     $> tt -v :tag
 
+Add the -c (copy) to get a list you can copy over
+    $> tt -c :tag
+
 And -t (tags) to get the list of tags
     $> tt -t
 
