@@ -80,7 +80,7 @@ def search(s):
         elif entry.type == "heading":
             pass
         else:
-            print(entry)
+            print(vars(entry))
             raise Exception('Did not understand type: ' + entry.type)
 
 #       way/
@@ -113,7 +113,7 @@ def search_verbose(s):
         elif entry.type == "heading":
             pass
         else:
-            print(entry)
+            print(vars(entry))
             raise Exception('Did not understand type: ' + entry.type)
     print("\n")
     for fname in files:
