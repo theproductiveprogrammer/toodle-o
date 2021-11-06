@@ -91,7 +91,7 @@ def search_verbose(s):
                 tags = ""
                 if entry.tags:
                     tags = "\t({0})".format(",".join(entry.tags))
-                print("{0} {3}\t{1}{2}".format(status,indent, entry.item, tags))
+                print("{0}{3}\t{1}{2}".format(status,indent, entry.item, tags))
         elif entry.type == "heading":
             pass
         else:
