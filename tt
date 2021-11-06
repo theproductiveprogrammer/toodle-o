@@ -351,7 +351,6 @@ def parse(f, todos):
         entry = Entry(l, fname)
         entry.type = "heading"
         tag = re.sub("\s+", "-", txt).lower() 
-        tag = re.sub("-\+-", "+", tag)
         entry.addTags([tag])
         indent = len(m1) - 1
         if indent > 0:
@@ -445,9 +444,9 @@ def load():
 def showBriefHelp():
     print("""tt: Toodle-O TODO Manager
     $> tt + add todo :tag
-    $> tt :tag
+    $> tt [:tag] [word]
     $> tt -v :tag
-    $> tt -x :tag search
+    $> tt -x [:tag] [word]
     $> tt -t
 
 Use -hh (or --man) to see detailed help
@@ -464,8 +463,8 @@ Add a new todo (+)
 Add a new todo with tags (:)
     $> tt + buy bread :joes :shopping
 
-Find todo's matching a tag
-    $> tt :shopping
+Find todo's matching tags or words
+    $> tt :shopping bread
     buy bread
 
 Find todo's which don't have tags
@@ -473,29 +472,15 @@ Find todo's which don't have tags
     add a new todo
 
 
-Use :tag1+tag2 to associate two tags
-    $> tt + buy wine :bws+shopping
+Use the :later tag to hide items.
+These will not be shown by default
+unless you use the verbose (-v) flag
 
-Now searching will bring up both
-    $> tt :shopping
-    buy bread
-    buy wine
-
-You can restrict the search using (:tag:)
-    $> tt :bws:
-    buy wine
-
-Use the special :later: tag to hide items
-that will not be shown until you explicitly search
-for it:
-    $> tt :project :later:
-
-
-Add the -v (verbose) to get more details
-    $> tt -v :tag
+Show EVERYTHING:
+    $> tt -v [:tag] [word]
 
 Add the -c (copy) to get a list you can copy over
-    $> tt -c :tag
+    $> tt -c [:tag] [word]
 
 And -t (tags) to get the list of tags
     $> tt -t
@@ -504,9 +489,14 @@ And -x (done) to mark matching items as complete
     $> tt -x :shopping bread
     x buy bread
 
-If you want to manage multiple todo files,
-create a "toodle-o.list" file each line of
-which contains the path to each todo file.""")
+
+We will use a "todo.txt" file in the current directory
+or, failing to find that, we will create and use a "todo.txt"
+file in the HOME directory.
+You can also provide a `toodle-o.list` file which contains,
+one on each line, a list of `todo` files scattered across various
+directories to process.""")
+
 ################################################################################
 
 main()

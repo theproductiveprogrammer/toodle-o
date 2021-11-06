@@ -10,19 +10,17 @@ Plain text is simple, easily created, easy to understand, and infinitely portabl
 
 1. Every Todo item starts with a special character (`[]`, `*`, `-`, `+`, or `#`)
 2. A ‘completed’ Todo can be deleted or marked with a starting `x`.
-3. You can add tags `:xxx` to any Todo.
-4. You can add multiple tags to any item like this: `:tag1 :tag2`. 
-5. You can associate tags by adding them together like this: `:tag1+tag2`. Now `tag1` and `tag2` are considered ‘linked’ - searching for one will search for the other as well.
-6. The special tag `:later:` is used to mark Todo’s to be done later.
-7. Lines that don’t start with any todo markers are considered supporting notes or rough scribbles. They are associated with the previous todo item found.
-8. Indented Todo’s are associated with the previous outdented Todo and inherit all it’s tags.
+3. You can add tags `:tag1`, `:tag2` to any Todo.
+4. Use the special tag `:later`  to mark Todo’s to be done later.
+5. Todo’s  can be indented to make for easier entry/reading. Indented Todo’s inherit the tags of it’s ‘parent’ Todo.
+6. Lines that don’t start with any todo markers are considered supporting notes or rough scribbles. Notes are associated with the previous todo item.
 
 ## Example
 
 ```
 * Write a todo list
-* Buy Eggs :shopping :supermarket
-* Butter :supermarket+shopping
+* Buy Eggs :shopping :joes
+* Butter :shopping
 * Cheese :shopping
 * Release Toodle-O :toodle-o
 x* Write Readme :toodle-o
@@ -40,9 +38,9 @@ At some point port it to the web?
 
 ## Setup
 
-You can provide a `toodle-o.list` file which contains, one on each line, a list of `todo` files scattered across various directories.
+The `toodle-o` command-line script will first look for a `todo.txt` file in the current directory. Failing that, it will look for a `todo.txt` in your HOME directory.
 
-If no such file is found, we default to `todo.txt`.
+You can also provide a `toodle-o.list` file which contains, one on each line, a list of `todo` files scattered across various directories.
 
 ## Usage
 
@@ -53,15 +51,13 @@ $> tt + add a new todo :project
 $> tt + :shopping bread
 ```
 
-If we provide a tag it will show us the list for that particular tag and all associated tags (without completed (`x`) and `:later:` items).
+If we provide a tag it will show us the list for those particular tags (without completed (`x`) and `:later` items).
 
 ```sh
 $> tt :shopping
 Buy Eggs
 Butter
 Cheese
-Pencils
-Chicken
 Bread
 $> tt :toodle-o
 Release Toodle-O
@@ -75,46 +71,36 @@ The nested elements are indented using tabs so they can be easily piped for furt
 We can see more details (including `later` and `done` entries along with the file name) with the verbose tag:
 
 ```sh
-$> tt -v :shopping
-TODO (shopping,supermarket)	Buy Eggs
-TODO (supermarket+shopping)	Butter
-TODO (shopping)	Cheese
-TODO (supermarket)	Pencils
-TODO (supermarket)	Chicken
-TODO (shopping)	Bread
-TODO (shopping)	Bacon
-TODO (supermarket)	Rice
+$> tt -v :shopping :supermarket
+TODO	(shopping,joes)	Buy Eggs
+TODO	(shopping)	Butter
+TODO	(shopping)	Cheese
+TODO	(supermarket)	Pencils
+TODO	(supermarket)	Chicken
+TODO	(shopping)	Bread
+TODO	(shopping)	Bacon
+TODO	(supermarket)	Rice
 
 /my/shopping/list.txt
 /my/todo/list.txt
 
 $> tt -v :toodle-o
-TODO (toodle-o)	Release Toodle-O
-DONE (toodle-o)	Write Readme
-TODO (toodle-o)	Implement Toodle-O
-TODO (toodle-o)		Write Parser
-TODO (toodle-o)		Write Command-Line Interface
-NOTE	Write toodle-o's command line in python because it's pretty ideal for little utilites like this.
-NOTE	At some point port it to the web?
-LATR (toodle-o)	Web Version
+TODO	(toodle-o)	Release Toodle-O
+DONE	(toodle-o)	Write Readme
+TODO	(toodle-o)	Implement Toodle-O
+TODO	(toodle-o)		Write Parser
+TODO	(toodle-o)		Write Command-Line Interface
+NOTE	(toodle-o)	Write toodle-o's command line in python because it's pretty ideal for little utilites like this.
+NOTE	(toodle-o)	At some point port it to the web?
+LATR	(toodle-o)	Web Version
 
 /my/projects/toodle-o/todo.txt
 ```
 
-To get EVERYTHING in a dump:
+To see everything:
 
 ```sh
 $> tt -v
-```
-
-If you want restrict your search to not match any associated items, use the `:tag:` form:
-
-```sh
-$>tt :shopping:
-Eggs
-Butter
-Cheese
-Bread
 ```
 
 And to find items that do not have any tags:
@@ -124,13 +110,19 @@ $> tt :
 Write a todo list
 ```
 
+You can also just search for any matching word:
+
+```sh
+$> tt eggs
+Buy Eggs
+```
+
 To get the list of tags:
 
 ```sh
 $> tt -t
 :shopping
 :supermarket
-:supermarket+shopping
 :toodle-o
 ```
 
@@ -138,7 +130,7 @@ To mark matching items as completed:
 
 ```sh
 $> tt -x :shopping eggs
-x Eggs
+x Buy Eggs
 ```
 
 
