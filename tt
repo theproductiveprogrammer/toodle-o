@@ -250,10 +250,10 @@ def parse(f, todos):
 
     def tagify_1(l):
         tags = []
-        rx = "\b:([^\s]+):?\b"
+        rx = "(^| ):([-_.+0-9A-Za-z]+)"
         m = re.search(rx, l)
         while m:
-            tags.append(m.group(1))
+            tags.append(m.group(2))
             l = l.replace(m.group(0), '')
             m = re.search(rx, l)
         txt = l.strip()
