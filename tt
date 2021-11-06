@@ -61,6 +61,9 @@ def processCmdLineArgs():
 def filter(todos, s):
     return todos
 
+#       way/
+# filter all the todo's then show them
+# in a clean, minimal output
 def search(s):
     todos = filter(load(), s)
     for entry in todos:
