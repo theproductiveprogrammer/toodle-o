@@ -423,6 +423,49 @@ def parse(f, todos):
         add_pending_notes_1()
 
 
+    #       problem/
+    # because the indents are a mix of spaces and
+    # tabs and don't really have a "proper" basis
+    # they can be somewhat wonky when output
+    #
+    #       understand/
+    # we know the indents are either at top level (0)
+    # or bigger than some parent entry before it
+    #
+    #       way/
+    # if the indent = 0, then set "re-ident=0"
+    # if the indent > 0, we walk back looking for
+    # the parent (indent < this) then set this
+    # "re-indent" to the previous "re-indent+1"
+    def reindent_1(entries):
+        ndx = 0
+        for entry in entries:
+            if entry.ndnt() == 0:
+                entry.reindent = 0
+            else:
+                entry.reindent = 0
+                reindent__1(reversed(entries[:ndx]), entry)
+            ndx += 1
+        for entry in entries:
+            entry.indent = entry.reindent
+            del entry.reindent
+
+    def reindent__1(parents, entry):
+        for parent in parents:
+            if parent.type == "heading":
+                if entry.type == "heading":
+                    if parent.ndnt() < entry.ndnt():
+                        entry.reindent = parent.reindent + 1
+                        return
+                else:
+                    entry.reindent = parent.reindent + 1
+                    return
+
+            if parent.type == "todo":
+                if entry.type != "heading":
+                    if parent.ndnt() < entry.ndnt():
+                        entry.reindent = parent.reindent + 1
+                        return
 
 
     with open(f) as t:
@@ -431,6 +474,7 @@ def parse(f, todos):
             entry = parse_(line.rstrip(), f)
             entries.append(entry)
         join_1(entries)
+        reindent_1(entries)
 
 
 #       way/
