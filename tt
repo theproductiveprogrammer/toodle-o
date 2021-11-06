@@ -100,7 +100,9 @@ def search_copy(s):
         elif entry.type == "heading":
             hdr = "#" * (entry.ndnt()+1)
             tags = remove_tags_1(seen, entry)
-            tags = " ".join([ t.title() for t in tags])
+            tags = [t.title() for t in tags]
+            tags.sort()
+            tags = " ".join(tags)
             print("{0} {1}".format(hdr, tags))
         elif entry.type == "todo":
             indent = "  " * entry.ndnt()
@@ -108,7 +110,9 @@ def search_copy(s):
             if entry.done:
                 done = "x"
             tags = remove_tags_1(seen, entry)
-            tags = " ".join([ ":"+t for t in tags])
+            tags = [":"+t for t in tags]
+            tags.sort()
+            tags = " ".join(tags)
             if tags and entry.item:
                 print("{0}{1}* {2} {3}".format(done, indent, entry.item, tags))
             elif entry.item:
