@@ -300,6 +300,12 @@ def parse(f, todos):
                         entry.addTags(todo.tags)
                         return
 
+                if todo.type == "todo":
+                    if todo.ndnt() < entry.ndnt():
+                        if entry.type != "heading":
+                            entry.addTags(todo.tags)
+                            return
+
         for entry in entries:
             if entry.type == "del":
                 pass
