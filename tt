@@ -138,7 +138,7 @@ class Entry:
             return
         if not self.tags:
             self.tags = set()
-        self.tags.update(tags)
+        self.tags.update([tag.lower() for tag in tags])
 
     def ndnt(self):
         if self.indent:
