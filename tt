@@ -133,10 +133,9 @@ class Entry:
     def addTags(self, tags):
         if not tags:
             return
-        if self.tags:
-            self.tags.extend(tags)
-        else:
-            self.tags = tags
+        if not self.tags:
+            self.tags = set()
+        self.tags.update(tags)
 
     def ndnt(self):
         if self.indent:
