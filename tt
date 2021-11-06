@@ -426,11 +426,11 @@ def parse(f, todos):
 
 
     with open(f) as t:
-        lines = []
+        entries = []
         for line in t:
-            l = parse_(line.rstrip(), f)
-            lines.append(l)
-        join_1(lines)
+            entry = parse_(line.rstrip(), f)
+            entries.append(entry)
+        join_1(entries)
 
 
 #       way/
