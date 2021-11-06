@@ -57,11 +57,11 @@ def processCmdLineArgs():
 
 ################################################################################
 # SEARCH SECTION
-def search_verbose(s):
+def search(s):
     # TODO
     pass
 
-def search(s):
+def search_verbose(s):
     todos = load()
     files = set()
     for entry in todos:
