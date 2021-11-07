@@ -188,9 +188,9 @@ def search_verbose(s):
 # ENGINE SECTION
 
 class Entry:
-    def __init__(self, orig, fname):
-        self.orig = orig
+    def __init__(self, lnum, fname):
         self.fname = fname
+        self.lnum = lnum
         self.type = None
         self.note = None
         self.item = None
@@ -274,19 +274,19 @@ def parse(f, todos):
     # additional []/[ ]/[x]. Mark [x] and ~~todo~~ as "done"
     # otherwise
     # it is a note
-    def parse_(l, fname):
+    def parse_(lnum, l, fname):
         done = False
         note = l
         indent = 0
 
-        entry = type_1("^\s*(=+)\s+(.*?)(=+)\s*$", l, fname)
+        entry = type_1("^\s*(=+)\s+(.*?)(=+)\s*$", l, fname, lnum)
         if entry:
             return entry
-        entry = type_1("^\s*(#+)\s+(.*?)(#*)\s*$", l, fname)
+        entry = type_1("^\s*(#+)\s+(.*?)(#*)\s*$", l, fname, lnum)
         if entry:
             return entry
 
-        entry = Entry(l, fname)
+        entry = Entry(lnum, fname)
 
         if len(l) > 0 and (l[0] == 'x' or l[0] == 'X'):
             l = l[1:]
@@ -348,6 +348,7 @@ def parse(f, todos):
         return (tags, txt)
 
     def type_1(rx, l, fname):
+    def type_1(rx, l, fname, lnum):
         m = re.match(rx, l)
         if not m:
             return None
@@ -358,7 +359,7 @@ def parse(f, todos):
         txt = m.group(2).strip()
         if not txt:
             return None
-        entry = Entry(l, fname)
+        entry = Entry(lnum, fname)
         entry.type = "heading"
         tag = re.sub("\s+", "-", txt).lower() 
         entry.addTags([tag])
@@ -374,15 +375,17 @@ def parse(f, todos):
     def join_1(entries):
         notes = []
         tags = []
+        notenum = None
 
         def add_pending_notes_1():
             nonlocal notes
             nonlocal tags
+            nonlocal notenum
             n = '\n'.join(notes)
             n = re.sub("^[\n\r]*", "", n)
             n = re.sub("[\n\r]*$", "", n)
             if n:
-                entry = Entry(None, f)
+                entry = Entry(notenum, f)
                 entry.type = "note"
                 entry.note = n
                 if len(tags) > 0:
@@ -414,6 +417,7 @@ def parse(f, todos):
                 pass
             elif entry.type == "note":
                 if len(notes) == 0:
+                    notenum = entry.lnum
                     if len(todos) > 0:
                         last = todos[len(todos)-1]
                         if last.tags:
@@ -474,8 +478,10 @@ def parse(f, todos):
 
     with open(f) as t:
         entries = []
+        lnum = 0
         for line in t:
-            entry = parse_(line.rstrip(), f)
+            lnum += 1
+            entry = parse_(lnum, line.rstrip(), f)
             entries.append(entry)
         join_1(entries)
         reindent_1(entries)
