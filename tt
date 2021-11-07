@@ -6,6 +6,8 @@ import os
 ################################################################################
 # MAIN SECTION
 
+DEFAULT_TODO_FILE = os.path.join(os.path.expanduser("~"), "todo.txt")
+
 #   understand/
 # main entry point into our program
 def main():
@@ -217,7 +219,7 @@ class Entry:
 # and the "todo.txt" in the user's HOME directory
 # and add the files specified in the "toodle-o.list"
 def get_todo_files():
-    files = [ "todo.txt", os.path.join(os.path.expanduser("~"), "todo.txt") ]
+    files = [ "todo.txt", DEFAULT_TODO_FILE ]
     files = [ f for f in files if os.path.exists(f) ]
 
     conf = os.path.join(os.path.dirname(__file__), "toodle-o.list")
@@ -226,6 +228,21 @@ def get_todo_files():
             files.extend([line.strip() for line in f.readlines()])
 
     return files
+
+
+#       understand/
+# extract :tags from the :line
+def tagify(l):
+    tags = []
+    rx = "(^| ):([-_.+0-9A-Za-z]+)"
+    m = re.search(rx, l)
+    while m:
+        tags.append(m.group(2))
+        l = l.replace(m.group(0), '')
+        m = re.search(rx, l)
+    txt = l.strip()
+    return (tags, txt)
+
 
 #       way/
 # read file and parse each line
@@ -320,7 +337,7 @@ def parse(f, todos):
                         l = l.split("~~")
                         l = l[1:(len(l)-1)]
                         l = "".join(l)
-                    (tags, txt) = tagify_1(l)
+                    (tags, txt) = tagify(l)
                     entry.type = "todo"
                     if tags:
                         entry.addTags(tags)
@@ -338,18 +355,6 @@ def parse(f, todos):
         return entry
 
 
-    def tagify_1(l):
-        tags = []
-        rx = "(^| ):([-_.+0-9A-Za-z]+)"
-        m = re.search(rx, l)
-        while m:
-            tags.append(m.group(2))
-            l = l.replace(m.group(0), '')
-            m = re.search(rx, l)
-        txt = l.strip()
-        return (tags, txt)
-
-    def type_1(rx, l, fname):
     def type_1(rx, l, fname, lnum):
         m = re.match(rx, l)
         if not m:
