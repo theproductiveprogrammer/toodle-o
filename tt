@@ -63,6 +63,78 @@ def processCmdLineArgs():
     return (showBriefHelp, None)
 
 ################################################################################
+# ADD SECTION
+
+#       way/
+# extract tags and write the line to
+# the appropriate file at the end of the
+# tag heading block or default to writing
+# to the HOME/todo.txt as a single line
+def add_todo(line):
+    location = None
+    (tags, txt) = tagify(line)
+    if tags:
+        location = find_location(load(), tags)
+    append_to_file(txt, tags, location)
+
+#       way/
+# if we are not given a location, then we do a default
+# append, otherwise we append to the given location
+def append_to_file(txt, tags, location):
+    if location:
+        append_at_location(txt, tags, location)
+    else:
+        append_default(txt, tags)
+
+
+#       way/
+# go to the end of the heading section and append
+# the text there
+def append_under_heading(txt, tags, location):
+    file, lnum = location
+    txt = "+ " + txt
+    print("{0}:{1}: {2}".format(file, lnum+1, txt))
+    with open(file, "r+") as f:
+        contents = f.readlines()
+        contents.insert(lnum, txt)
+        f.seek(0)
+        f.writelines(contents)
+
+
+#       way/
+# open the default file and append a new line with the
+# text and tags
+def append_default(txt, tags):
+    if tags:
+        txt += " " + " ".join([":"+tag for tag in tags])
+    txt = "+ " + txt
+    print("{0}: {1}".format(DEFAULT_TODO_FILE, txt))
+    if os.path.exists(DEFAULT_TODO_FILE):
+        txt = "\n" + txt
+    with open(DEFAULT_TODO_FILE, "a") as f:
+        f.write(txt)
+
+
+#       way/
+# walk the entries and find any headings where
+# the tags match the given tags, then walk down
+# to the end of the block and return that location
+def find_location(entries, tags):
+    tags = set(tags)
+    ndx = 0
+    lnum = None
+    for entry in entries:
+        ndx += 1
+        if entry.type == "heading" and tags == set(entry.tags):
+            lnum = entry.enum()
+            for entry in entries[ndx:]:
+                if entry.type == "heading" and tags != set(entry.tags):
+                    return entry.fname, lnum
+                else:
+                    lnum = entry.enum()
+
+
+################################################################################
 # SEARCH SECTION
 
 def filter(todos, s):
@@ -213,6 +285,11 @@ class Entry:
         if self.indent:
             return self.indent
         return 0
+
+    def enum(self):
+        if self.enum:
+            return self.enum
+        return self.lnum
 
 #       understand/
 # add the "todo.txt" in the current directory (if it exists),
