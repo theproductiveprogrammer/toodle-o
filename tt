@@ -375,17 +375,20 @@ def parse(f, todos):
     def join_1(entries):
         notes = []
         tags = []
-        notenum = None
+        notenum_s = None
+        notenum_e = None
 
         def add_pending_notes_1():
             nonlocal notes
             nonlocal tags
-            nonlocal notenum
+            nonlocal notenum_s
+            nonlocal notenum_e
             n = '\n'.join(notes)
             n = re.sub("^[\n\r]*", "", n)
             n = re.sub("[\n\r]*$", "", n)
             if n:
-                entry = Entry(notenum, f)
+                entry = Entry(notenum_s, f)
+                entry.enum = notenum_e
                 entry.type = "note"
                 entry.note = n
                 if len(tags) > 0:
@@ -393,6 +396,8 @@ def parse(f, todos):
                 todos.append(entry)
             notes = []
             tags = []
+            notenum_s = None
+            notenum_e = None
 
         def update_tags_1(entry):
             for todo in reversed(todos):
@@ -417,12 +422,13 @@ def parse(f, todos):
                 pass
             elif entry.type == "note":
                 if len(notes) == 0:
-                    notenum = entry.lnum
+                    notenum_s = entry.lnum
                     if len(todos) > 0:
                         last = todos[len(todos)-1]
                         if last.tags:
                             tags = last.tags
                 notes.append(entry.note)
+                notenum_e = entry.lnum
             else:
                 add_pending_notes_1()
                 update_tags_1(entry)
