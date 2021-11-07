@@ -31,22 +31,24 @@ def processCmdLineArgs():
         return (showBriefHelp, None)
 
     cmd = sys.argv[1]
-
-    if not cmd.startswith("-"):
-        return (search, ' '.join(sys.argv[1:]))
-    cmd = re.sub("^-+", "", cmd)
+    args = ' '.join(sys.argv[2:])
 
     if cmd == "+":
-        return ("add_todo", ' '.join(sys.argv[1:]))
-
-    if cmd == "v":
-        return (search_verbose, ' '.join(sys.argv[1:]))
-
-    if cmd == "c" or cmd == "copy":
-        return (search_copy, ' '.join(sys.argv[1:]))
+        return (add_todo, args)
 
     if cmd == "x":
-        return ("mark_done", ' '.join(sys.argv[1:]))
+        return ("mark_done", args)
+
+    if not cmd.startswith("-"):
+        return (search, sys.argv[1:])
+
+    cmd = re.sub("^-+", "", cmd)
+
+    if cmd == "v":
+        return (search_verbose, sys.argv[1:])
+
+    if cmd == "c" or cmd == "copy":
+        return (search_copy, sys.argv[1:])
 
     if cmd == "t":
         if len(sys.argv) > 2:
