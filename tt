@@ -55,7 +55,7 @@ def processCmdLineArgs():
     if cmd == "t":
         if len(sys.argv) > 2:
             raise Exception('"-t" cannot have any arguments')
-        return ("tag_list", None)
+        return (tag_list, None)
 
     if cmd == "hh" or cmd == "man":
         return (showDetailedHelp, None)
@@ -625,6 +625,24 @@ def load():
         parse(f, t)
         todos.extend(t)
     return todos
+
+
+################################################################################
+# TAG SECTION
+
+def tag_list():
+    for tag in all_tags():
+        print(":"+tag)
+
+def all_tags():
+    entries = load()
+    tags = set()
+    for entry in entries:
+        if entry.tags:
+            tags.update(entry.tags)
+    tags = list(tags)
+    tags.sort()
+    return tags
 
 
 ################################################################################
