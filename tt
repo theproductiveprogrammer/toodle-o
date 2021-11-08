@@ -136,6 +136,50 @@ def find_location(entries, tags):
 
 
 ################################################################################
+# UPDATE SECTION
+
+#       way/
+# update all matching entries, file-by-file,
+# by adding a 'x' in the beginning
+def mark_done(s):
+    todos = filter(load(), s)
+    words = s.split(' ')
+    entries = dict()
+    for todo in todos:
+        if todo.type == "heading" or todo.type == "note":
+            pass
+        elif todo.type == "todo":
+            if todo.done:
+                continue
+            if todo.tags and "later" in todo.tags and ":later" not in words:
+                continue
+            if todo.fname in entries:
+                entries[todo.fname].append(todo)
+            else:
+                entries[todo.fname] = [todo]
+        else:
+            raise Exception('Did not understand type: ' + entry.type)
+
+    for f in entries.keys():
+        with open(f, "r+") as fd:
+            contents = fd.readlines()
+            for entry in entries[f]:
+                print("x " + entry.item)
+                ndx = entry.lnum - 1
+                contents[ndx] = "x" + contents[ndx]
+            fd.seek(0)
+            fd.writelines(contents)
+
+    print("\n")
+    files = [f for f in entries.keys()]
+    files.sort()
+    for f in files:
+        print(f)
+
+
+
+
+################################################################################
 # SEARCH SECTION
 
 #       understand/
@@ -223,20 +267,8 @@ def search_copy(s):
             tags = " ".join(tags)
             print("{0} {1}".format(hdr, tags))
         elif entry.type == "todo":
-            indent = "  " * entry.ndnt()
-            done = ""
-            if entry.done:
-                done = "x"
-            tags = remove_tags_1(seen, entry)
-            tags = [":"+t for t in tags]
-            tags.sort()
-            tags = " ".join(tags)
-            if tags and entry.item:
-                print("{0}{1}* {2} {3}".format(done, indent, entry.item, tags))
-            elif entry.item:
-                print("{0}{1}* {2}".format(done, indent, entry.item))
-            elif tags:
-                print("{0}{1}* {2}".format(done, indent, tags))
+            entry.tags = remove_tags_1(seen, entry)
+            print(fmtted(entry))
         else:
             print(vars(entry))
             raise Exception('Did not understand type: ' + entry.type)
@@ -361,6 +393,25 @@ def tagify(l):
         m = re.search(rx, l)
     txt = l.strip()
     return (tags, txt)
+
+
+def fmtted(entry):
+    indent = "  " * entry.ndnt()
+    done = ""
+    if entry.done:
+        done = "x"
+    tags = []
+    if entry.tags:
+        tags = [":"+t for t in entry.tags]
+        tags.sort()
+        tags = " ".join(tags)
+    if tags and entry.item:
+        return "{0}{1}* {2} {3}".format(done, indent, entry.item, tags)
+    if entry.item:
+        return "{0}{1}* {2}".format(done, indent, entry.item)
+    if tags:
+        "{0}{1}* {2}".format(done, indent, tags)
+    return ""
 
 
 #       way/
