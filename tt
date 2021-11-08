@@ -38,13 +38,16 @@ def processCmdLineArgs():
     if cmd == "+":
         return (add_todo, args)
 
-    if cmd == "x":
-        return ("mark_done", args)
-
     if not cmd.startswith("-"):
-        return (search, ' '.join(sys.argv[1:]))
+        return (showBriefHelp, None)
 
     cmd = re.sub("^-+", "", cmd)
+
+    if cmd == "s":
+        return (search, args)
+
+    if cmd == "x":
+        return (mark_done, args)
 
     if cmd == "v":
         return (search_verbose, args)
