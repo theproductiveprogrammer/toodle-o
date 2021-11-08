@@ -420,7 +420,7 @@ def fmtted(entry):
     if entry.item:
         return "{0}{1}* {2}".format(done, indent, entry.item)
     if tags:
-        "{0}{1}* {2}".format(done, indent, tags)
+        return "{0}{1}* {2}".format(done, indent, tags)
     return ""
 
 
