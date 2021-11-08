@@ -90,13 +90,13 @@ def append_to_file(txt, tags, location):
 #       way/
 # go to the end of the heading section and append
 # the text there
-def append_under_heading(txt, tags, location):
+def append_at_location(txt, tags, location):
     file, lnum = location
     txt = "+ " + txt
     print("{0}:{1}: {2}".format(file, lnum+1, txt))
     with open(file, "r+") as f:
         contents = f.readlines()
-        contents.insert(lnum, txt)
+        contents.insert(lnum, txt + "\n")
         f.seek(0)
         f.writelines(contents)
 
@@ -109,10 +109,8 @@ def append_default(txt, tags):
         txt += " " + " ".join([":"+tag for tag in tags])
     txt = "+ " + txt
     print("{0}: {1}".format(DEFAULT_TODO_FILE, txt))
-    if os.path.exists(DEFAULT_TODO_FILE):
-        txt = "\n" + txt
     with open(DEFAULT_TODO_FILE, "a") as f:
-        f.write(txt)
+        f.write(txt + "\n")
 
 
 #       way/
@@ -126,12 +124,12 @@ def find_location(entries, tags):
     for entry in entries:
         ndx += 1
         if entry.type == "heading" and tags == set(entry.tags):
-            lnum = entry.enum()
+            lnum = entry.endnum()
             for entry in entries[ndx:]:
                 if entry.type == "heading" and tags != set(entry.tags):
                     return entry.fname, lnum
                 else:
-                    lnum = entry.enum()
+                    lnum = entry.endnum()
 
 
 ################################################################################
@@ -257,6 +255,8 @@ def search_verbose(s):
             print(vars(entry))
             raise Exception('Did not understand type: ' + entry.type)
     print("\n")
+    files = list(files)
+    files.sort()
     for fname in files:
         print(fname)
 
@@ -286,10 +286,8 @@ class Entry:
             return self.indent
         return 0
 
-    def enum(self):
-        if self.enum:
-            return self.enum
-        return self.lnum
+    def endnum(self):
+        return getattr(self, "enum", self.lnum)
 
 #       understand/
 # add the "todo.txt" in the current directory (if it exists),
