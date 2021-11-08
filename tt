@@ -715,7 +715,7 @@ def loadConfig():
     if os.path.exists(conff):
         with open(conff) as f:
             curr = None
-            in_files = False
+            in_files = True
             for line in f.readlines():
                 if line.strip().startswith("["):
                     line = line.strip()
