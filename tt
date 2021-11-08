@@ -239,7 +239,7 @@ def search(s):
         if entry.done:
             continue
         if entry.type == "note":
-            print(entry.note)
+            pass
         elif entry.type == "todo":
             if entry.item:
                 indent = "\t" * entry.ndnt()
