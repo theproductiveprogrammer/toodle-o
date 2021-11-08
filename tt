@@ -13,7 +13,7 @@ DEFAULT_TODO_FILE = os.path.join(os.path.expanduser("~"), "todo.txt")
 def main():
     try:
         c, ar = processCmdLineArgs()
-        if ar:
+        if ar or ar == "":
             c(ar)
         else:
             c()
