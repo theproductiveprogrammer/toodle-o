@@ -386,7 +386,7 @@ def get_todo_files():
 
     conf = loadConfig()
 
-    return conf.files
+    return files + conf.files
 
 
 #       understand/
