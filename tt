@@ -256,20 +256,22 @@ def search(s):
 # another file
 def search_copy(s):
     todos = filter(load(), s)
-    seen = []
+
+    num_seen = 0
+    for entry in reversed(todos):
+        num_seen += 1
+        entry.tags = remove_tags_1(reversed(todos[:len(todos)-num_seen]), entry)
+
     for entry in todos:
-        seen.append(entry)
         if entry.type == "note":
             print(entry.note)
         elif entry.type == "heading":
             hdr = "#" * (entry.ndnt()+1)
-            tags = remove_tags_1(seen, entry)
-            tags = [t.title() for t in tags]
+            tags = [t.title() for t in entry.tags]
             tags.sort()
             tags = " ".join(tags)
             print("{0} {1}".format(hdr, tags))
         elif entry.type == "todo":
-            entry.tags = remove_tags_1(seen, entry)
             print(fmtted(entry))
         else:
             print(vars(entry))
@@ -284,7 +286,7 @@ def remove_tags_1(seen, entry):
 
     tags.update(entry.tags)
 
-    for todo in reversed(seen):
+    for todo in seen:
         if todo.type == "heading":
             if entry.type == "heading":
                 if todo.ndnt() < entry.ndnt():
