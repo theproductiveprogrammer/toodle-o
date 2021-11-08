@@ -651,8 +651,8 @@ def all_tags():
 def showBriefHelp():
     print("""tt: Toodle-O TODO Manager
     $> tt + add todo :tag
-    $> tt [:tag] [word]
-    $> tt -v :tag
+    $> tt -s [:tag] [word]
+    $> tt -v [:tag] [word]
     $> tt -x [:tag] [word]
     $> tt -t
 
@@ -671,11 +671,11 @@ Add a new todo with tags (:)
     $> tt + buy bread :joes :shopping
 
 Find todo's matching tags or words
-    $> tt :shopping bread
+    $> tt -s :shopping bread
     buy bread
 
 Find todo's which don't have tags
-    $> tt :
+    $> tt -s :
     add a new todo
 
 
