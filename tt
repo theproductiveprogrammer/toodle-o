@@ -41,7 +41,10 @@ def processCmdLineArgs():
         return (add_todo, args)
 
     if not cmd.startswith("-"):
-        return (showBriefHelp, None)
+        if len(cmd) < 3: # user may have mistyped a -command
+            return (showBriefHelp, None)
+        else:
+            return (search, ' '.join(sys.argv[1:]))
 
     cmd = re.sub("^-+", "", cmd)
 
