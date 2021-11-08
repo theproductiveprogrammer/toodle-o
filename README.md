@@ -38,15 +38,29 @@ At some point port it to the web?
 
 ## Setup
 
-The `toodle-o` command-line script will first look for a `todo.txt` file in the current directory. Failing that, it will look for a `todo.txt` in your HOME directory.
+The `toodle-o` command-line script, by default, will work with a `todo.txt` file in your HOME directory. It will also look for a `toodle-o.conf` file in your HOME directory which can contain a list of `todo` files scattered across various directories.
 
-You can also provide a `toodle-o.conf` file in your HOME directory which contains a list of `todo` files scattered across various directories like this:
+toodle-o.conf:
 
 ```conf
 [files]
 ./Desktop/todo.txt
 ./my/projects/toodle-o/todo.txt
 ...
+```
+
+`toodle-o` is good at understanding a variety of `todo` formats and importing them for use.
+
+You can bypass the default `$HOME/todo.txt` and files in `toodle-o.conf` by providing files yourself on the command line using multiple `-f` flags:
+
+```sh
+$> tt -f mytodo.txt -f ../project/todo.txt ...
+```
+
+If you would like to simply *add* a file temporarily to the defaults use the `+f` flag instead:
+
+```sh
+$> tt +f mytodo.txt
 ```
 
 ## Usage
