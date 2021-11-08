@@ -162,6 +162,8 @@ def find_location(entries, tags):
                     return fname, lnum
                 else:
                     lnum = entry.endnum()
+    if fname:
+        return fname,lnum
 
 
 ################################################################################
