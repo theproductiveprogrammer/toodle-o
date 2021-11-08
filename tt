@@ -66,12 +66,15 @@ def processCmdLineArgs():
             return (showBriefHelp, args)
         else:
             args.setArgs(sys.argv[s:])
-            return (search, args)
+            return (simple_search, args)
 
     cmd = re.sub("^-+", "", cmd)
 
     if cmd == "s":
-        return (search, args)
+        return (simple_search, args)
+
+    if cmd == "ss":
+        return (super_simple_search, args)
 
     if cmd == "x":
         return (mark_done, args)
@@ -262,28 +265,42 @@ def filter(todos, s):
     return ret
 
 
+def simple_search(args):
+    entries = search(args)
+    for entry in entries:
+        indent = "    " * entry.ndnt()
+        if entry.tags:
+            tags = " ".join([":"+t for t in entry.tags])
+            print(indent + "- " + entry.item + " " + tags)
+        else:
+            print(indent + "- " + entry.item)
+
+
+def super_simple_search(args):
+    entries = search(args)
+    for entry in entries:
+        indent = "    " * entry.ndnt()
+        print(indent + "- " + entry.item)
+
 #       way/
-# filter all the todo's then show them
-# in a clean, minimal output
+# get all active todo's matching the criteria
 def search(args):
     todos = filter(load(args.files), args.args)
     words = args.argv
-    for entry in todos:
-        if entry.tags and "later" in entry.tags and ":later" not in words:
-            continue
+
+    def isactive(entry):
+        nonlocal words
         if entry.done:
-            continue
-        if entry.type == "note":
-            pass
-        elif entry.type == "todo":
-            if entry.item:
-                indent = "    " * entry.ndnt()
-                print(indent + "- " + entry.item)
-        elif entry.type == "heading":
-            pass
-        else:
-            print(vars(entry))
-            raise Exception('Did not understand type: ' + entry.type)
+            return False
+        if entry.type != "todo":
+            return False
+        if not entry.item:
+            return False
+        if entry.tags and "later" in entry.tags and ":later" not in words:
+            return False
+        return True
+
+    return [todo for todo in todos if isactive(todo)]
 
 #       way/
 # filter all the todo's then show them
@@ -771,6 +788,7 @@ def showBriefHelp(_):
     print("""tt: Toodle-O TODO Manager (v{0})
     $> tt + add todo :tag
     $> tt -s [:tag] [word]
+       tt -ss [:tag] [word]
     $> tt -v [:tag] [word]
     $> tt -x [:tag] [word]
     $> tt -t
@@ -790,8 +808,10 @@ Add a new todo with tags (:)
     $> tt + buy bread :joes :shopping
 
 Find todo's matching tags or words
-    $> tt -s :shopping bread
+    $> tt -ss :shopping bread
     buy bread
+    $> tt -s :shopping bread
+    buy bread :shopping
 
 Find todo's which don't have tags
     $> tt -s :

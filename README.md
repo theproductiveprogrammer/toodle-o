@@ -75,12 +75,12 @@ $> tt + :shopping bread
 If we provide a tag it will show us the list for those particular tags (without completed (`x`) and `:later` items).
 
 ```sh
-$> tt -s :shopping
+$> tt -ss :shopping
 Buy Eggs
 Butter
 Cheese
 Bread
-$> tt -s :toodle-o
+$> tt -ss :toodle-o
 Release Toodle-O
 Implement Toodle-O
 	Write Parser
@@ -127,14 +127,14 @@ $> tt -v
 And to find items that do not have any tags:
 
 ```sh
-$> tt -s :
+$> tt -ss :
 Write a todo list
 ```
 
 You can also just search for any matching word:
 
 ```sh
-$> tt -s eggs
+$> tt -ss eggs
 Buy Eggs
 ```
 
