@@ -42,15 +42,15 @@ def processCmdLineArgs():
         return ("mark_done", args)
 
     if not cmd.startswith("-"):
-        return (search, sys.argv[1:])
+        return (search, ' '.join(sys.argv[1:]))
 
     cmd = re.sub("^-+", "", cmd)
 
     if cmd == "v":
-        return (search_verbose, sys.argv[1:])
+        return (search_verbose, args)
 
     if cmd == "c" or cmd == "copy":
-        return (search_copy, sys.argv[1:])
+        return (search_copy, args)
 
     if cmd == "t":
         if len(sys.argv) > 2:
