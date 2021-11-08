@@ -179,11 +179,12 @@ def mark_done(s):
             fd.seek(0)
             fd.writelines(contents)
 
-    print("\n")
-    files = [f for f in entries.keys()]
-    files.sort()
-    for f in files:
-        print(f)
+    if entries:
+        print("")
+        files = [f for f in entries.keys()]
+        files.sort()
+        for f in files:
+            print(f)
 
 
 
