@@ -361,9 +361,12 @@ class Entry:
     def addTags(self, tags):
         if not tags:
             return
+        tags = [tag.lower() for tag in tags]
         if not self.tags:
-            self.tags = set()
-        self.tags.update([tag.lower() for tag in tags])
+            self.tags = tags
+        else:
+            tags = [tag for tag in tags if tag not in self.tags]
+            self.tags = tags + self.tags
 
     def ndnt(self):
         if self.indent:
@@ -722,14 +725,15 @@ def loadConfig():
 
 def tag_list():
     for tag in all_tags():
-        print(":"+tag)
+        print(tag)
 
 def all_tags():
     entries = load()
     tags = set()
     for entry in entries:
         if entry.tags and not entry.done:
-            tags.update(entry.tags)
+            et = " ".join([":"+t for t in entry.tags])
+            tags.add(et)
     tags = list(tags)
     tags.sort()
     return tags
