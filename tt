@@ -251,7 +251,7 @@ def search(s):
         elif entry.type == "todo":
             if entry.item:
                 indent = "    " * entry.ndnt()
-                print(indent + entry.item)
+                print(indent + "- " + entry.item)
         elif entry.type == "heading":
             pass
         else:
@@ -336,7 +336,7 @@ def search_verbose(s):
                 tags = "(:)"
                 if entry.tags:
                     tags = "({0})".format(",".join(entry.tags))
-                print("{0}\t{3}\t{1}{2}".format(status,indent, entry.item, tags))
+                print("{0}\t{3}\t{1}- {2}".format(status,indent, entry.item, tags))
         elif entry.type == "heading":
             pass
         else:

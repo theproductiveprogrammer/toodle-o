@@ -3,5 +3,5 @@
 + support "x " in done
 x+ support defaulting to "-s" when it looks like a search
 + add ":doneon=<yyyy-mm-dd>" on done
-+ add "- " to todo items in simple search
+x+ add "- " to todo items in simple search
 x+ reduce space between filename and output in 'x'
