@@ -806,12 +806,17 @@ And -x (done) to mark matching items as complete
     x buy bread
 
 
-We will use a "todo.txt" file in the current directory
-or, failing to find that, we will create and use a "todo.txt"
-file in the HOME directory.
-You can also provide a `toodle-o.list` file which contains,
-one on each line, a list of `todo` files scattered across various
-directories to process.""".format(VERSION))
+File Management:
+By default, we will use a default file (~/todo.txt):
+{1}
+You can also provide a `toodle-o.conf` to handle multiple
+files.
+
+Use a different file instead:
+    $> tt -f /use/this.txt
+
+Or add a new file to process for now:
+    $> tt +f /use/additional.txt""".format(VERSION, DEFAULT_TODO_FILE))
 
 ################################################################################
 
