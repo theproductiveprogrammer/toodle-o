@@ -27,8 +27,8 @@ def main():
 
 class Args:
     def __init__(self):
-        self.args = None
-        self.argv = None
+        self.args = ''
+        self.argv = []
         self.files = []
 
     def setArgs(self, argv):
@@ -42,6 +42,9 @@ def processCmdLineArgs():
     conf = loadConfig()
     args = Args()
 
+    if len(sys.argv) == 1:
+        return (showBriefHelp, args)
+
     s = 1
     while s < len(sys.argv) and sys.argv[s] in [ "-f" , "+f" ]:
         if (s+1) < len(sys.argv):
@@ -53,13 +56,17 @@ def processCmdLineArgs():
         args.files = conf.files
 
     if len(sys.argv) <= s:
-        return (showBriefHelp, args)
+        return (simple_search, args)
 
     cmd = sys.argv[s]
     args.setArgs(sys.argv[s+1:])
 
     if cmd == "+":
         return (add_todo, args)
+
+    if cmd == ":":
+        args.setArgs([":"])
+        return (simple_search, args)
 
     if not cmd.startswith("-"):
         if len(cmd) < 3: # user may have mistyped a -command
