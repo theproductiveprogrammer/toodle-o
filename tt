@@ -242,7 +242,7 @@ def search(s):
             pass
         elif entry.type == "todo":
             if entry.item:
-                indent = "\t" * entry.ndnt()
+                indent = "    " * entry.ndnt()
                 print(indent + entry.item)
         elif entry.type == "heading":
             pass
