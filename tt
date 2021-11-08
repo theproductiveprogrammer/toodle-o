@@ -343,6 +343,10 @@ def search_verbose(s):
 ################################################################################
 # ENGINE SECTION
 
+class Conf:
+    def __init__(self):
+        self.files = []
+
 class Entry:
     def __init__(self, lnum, fname):
         self.fname = fname
@@ -372,26 +376,14 @@ class Entry:
 #       understand/
 # add the "todo.txt" in the current directory (if it exists),
 # and the "todo.txt" in the user's HOME directory
-# and add the files specified in the "toodle-o.list"
+# and add the files specified in toodle-o.config
 def get_todo_files():
     files = [ "todo.txt", DEFAULT_TODO_FILE ]
     files = [ f for f in files if os.path.exists(f) ]
 
-    conf = os.path.expanduser("~/toodle-o.conf")
-    if os.path.exists(conf):
-        with open(conf) as f:
-            in_files = False
-            for line in f.readlines():
-                line = line.strip()
-                if line == "[files]":
-                    in_files = True
-                    continue
-                if in_files:
-                    if line.startswith("~/"):
-                        line = os.path.expanduser(line)
-                    if line:
-                        files.append(os.path.normpath(os.path.join(os.path.dirname(conf), line)))
-    return files
+    conf = loadConfig()
+
+    return conf.files
 
 
 #       understand/
@@ -694,6 +686,36 @@ def load():
         todos.extend(t)
     return todos
 
+
+#       way/
+# load the configuration file
+def loadConfig():
+    conf = Conf()
+
+    conff = os.path.expanduser("~/toodle-o.conf")
+    if os.path.exists(conff):
+        with open(conff) as f:
+            curr = None
+            in_files = False
+            for line in f.readlines():
+                if line.strip().startswith("["):
+                    line = line.strip()
+                    in_files = False
+
+                    if line == "[files]":
+                        in_files = True
+
+                    continue
+
+                if in_files:
+                    line = line.strip()
+                    if line.startswith("~/"):
+                        line = os.path.expanduser(line)
+                    if line:
+                        conf.files.append(os.path.normpath(os.path.join(os.path.dirname(conff), line)))
+
+
+    return conf
 
 ################################################################################
 # TAG SECTION
