@@ -183,8 +183,9 @@ def filter(todos, s):
 # in a clean, minimal output
 def search(s):
     todos = filter(load(), s)
+    words = s.split(' ')
     for entry in todos:
-        if entry.tags and "later" in entry.tags:
+        if entry.tags and "later" in entry.tags and ":later" not in words:
             continue
         if entry.done:
             continue
