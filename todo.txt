@@ -1,5 +1,4 @@
 # Toodle-O
-+ show tags in simple search
 + support "x " in done
 x+ support defaulting to "-s" when it looks like a search
 + add ":doneon=<yyyy-mm-dd>" on done
