@@ -135,8 +135,48 @@ def find_location(entries, tags):
 ################################################################################
 # SEARCH SECTION
 
+#       understand/
+# find a todo that matches ANY of the tags
+# and ALL of the words
 def filter(todos, s):
-    return todos
+    (tags, txt) = tagify(s)
+    words = txt.split(' ')
+    tags.extend([t for t in words if t == ":"])
+    words = [w for w in words if w != ":"]
+
+    def matches_tags(tags, entry):
+        if not tags:
+            return True
+        for tag in tags:
+            if tag == ":" and not entry.tags:
+                return True
+            if entry.tags and tag in entry.tags:
+                return True
+        return False
+
+    def matches_words(words, entry):
+        w = []
+        if entry.item:
+            w = re.split("\W+", entry.item)
+        elif entry.note:
+            w = re.split("\W+", entry.note)
+        if entry.tags:
+            w.extend(entry.tags)
+        for word in words:
+            match = False
+            for i in w:
+                if i.lower().startswith(word.lower()):
+                    match = True
+            if not match:
+                return False
+        return True
+
+    ret = []
+    for entry in todos:
+        if matches_tags(tags, entry) and matches_words(words, entry):
+            ret.append(entry)
+    return ret
+
 
 #       way/
 # filter all the todo's then show them
