@@ -40,7 +40,14 @@ At some point port it to the web?
 
 The `toodle-o` command-line script will first look for a `todo.txt` file in the current directory. Failing that, it will look for a `todo.txt` in your HOME directory.
 
-You can also provide a `toodle-o.list` file which contains, one on each line, a list of `todo` files scattered across various directories.
+You can also provide a `toodle-o.conf` file in your HOME directory which contains a list of `todo` files scattered across various directories like this:
+
+```conf
+[files]
+./Desktop/todo.txt
+./my/projects/toodle-o/todo.txt
+...
+```
 
 ## Usage
 

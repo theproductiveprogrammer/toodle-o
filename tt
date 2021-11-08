@@ -373,11 +373,17 @@ def get_todo_files():
     files = [ "todo.txt", DEFAULT_TODO_FILE ]
     files = [ f for f in files if os.path.exists(f) ]
 
-    conf = os.path.join(os.path.dirname(__file__), "toodle-o.list")
+    conf = os.path.join(os.path.expanduser("~"), "toodle-o.conf")
     if os.path.exists(conf):
         with open(conf) as f:
-            files.extend([line.strip() for line in f.readlines()])
-
+            in_files = False
+            for line in f.readlines():
+                line = line.strip()
+                if line == "[files]":
+                    in_files = True
+                    continue
+                if in_files:
+                    files.append(os.path.normpath(os.path.join(os.path.dirname(conf), line)))
     return files
 
 
