@@ -562,8 +562,8 @@ def parse(f, todos):
             return None
         entry = Entry(lnum, fname)
         entry.type = "heading"
-        tag = re.sub("\s+", "-", txt).lower() 
-        entry.addTags([tag])
+        tags = [t.lower() for t in txt.split(" ") if t]
+        entry.addTags(tags)
         indent = len(m1) - 1
         if indent > 0:
             entry.indent = indent
