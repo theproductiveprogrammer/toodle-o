@@ -1,5 +1,5 @@
 # Toodle-O
-+ support "x " in done
+x+ support "x " in done :doneon=2021-11-08
 x+ support defaulting to "-s" when it looks like a search
 x+ add ":doneon=<yyyy-mm-dd>" on done :doneon=2021-11-08
 x+ add "- " to todo items in simple search

@@ -501,6 +501,8 @@ def parse(f, todos):
 
         if len(l) > 0 and (l[0] == 'x' or l[0] == 'X'):
             l = l[1:]
+            if (l[0] == ' ' or l[0] == '\t') and (l[1] != ' ' and l[1] != '\t'):
+                l = l[1:]
             done = True
 
         m = re.match("^\s+", l)
