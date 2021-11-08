@@ -8,7 +8,7 @@ import os
 
 VERSION = "1.1.0"
 
-DEFAULT_TODO_FILE = os.path.join(os.path.expanduser("~"), "todo.txt")
+DEFAULT_TODO_FILE = os.path.expanduser("~/todo.txt")
 
 #   understand/
 # main entry point into our program
@@ -377,7 +377,7 @@ def get_todo_files():
     files = [ "todo.txt", DEFAULT_TODO_FILE ]
     files = [ f for f in files if os.path.exists(f) ]
 
-    conf = os.path.join(os.path.expanduser("~"), "toodle-o.conf")
+    conf = os.path.expanduser("~/toodle-o.conf")
     if os.path.exists(conf):
         with open(conf) as f:
             in_files = False
@@ -387,7 +387,10 @@ def get_todo_files():
                     in_files = True
                     continue
                 if in_files:
-                    files.append(os.path.normpath(os.path.join(os.path.dirname(conf), line)))
+                    if line.startswith("~/"):
+                        line = os.path.expanduser(line)
+                    if line:
+                        files.append(os.path.normpath(os.path.join(os.path.dirname(conf), line)))
     return files
 
 
