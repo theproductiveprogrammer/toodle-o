@@ -126,13 +126,17 @@ def find_location(entries, tags):
     tags = set(tags)
     ndx = 0
     lnum = None
+    fname = None
     for entry in entries:
         ndx += 1
         if entry.type == "heading" and tags == set(entry.tags):
             lnum = entry.endnum()
+            fname = entry.fname
             for entry in entries[ndx:]:
+                if entry.fname != fname:
+                    return fname, lnum
                 if entry.type == "heading" and tags != set(entry.tags):
-                    return entry.fname, lnum
+                    return fname, lnum
                 else:
                     lnum = entry.endnum()
 
