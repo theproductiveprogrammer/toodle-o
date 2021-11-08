@@ -2,6 +2,7 @@
 import sys
 import re
 import os
+import datetime
 
 ################################################################################
 # MAIN SECTION
@@ -154,6 +155,7 @@ def mark_done(s):
     todos = filter(load(), s)
     words = s.split(' ')
     entries = dict()
+    dt = " :doneon={0}".format(datetime.date.today().isoformat())
     for todo in todos:
         if todo.type == "heading" or todo.type == "note":
             pass
@@ -175,7 +177,9 @@ def mark_done(s):
             for entry in entries[f]:
                 print("x " + entry.item)
                 ndx = entry.lnum - 1
-                contents[ndx] = "x" + contents[ndx]
+                c = contents[ndx]
+                eol = c[len(c)-1]
+                contents[ndx] = "x" + c[:len(c)-1] + dt + eol
             fd.seek(0)
             fd.writelines(contents)
 
@@ -207,8 +211,10 @@ def filter(todos, s):
         for tag in tags:
             if tag == ":" and not entry.tags:
                 return True
-            if entry.tags and tag in entry.tags:
-                return True
+            if entry.tags:
+                ets = [t.split("=")[0] for t in entry.tags]
+                if tag in ets:
+                    return True
         return False
 
     def matches_words(words, entry):
