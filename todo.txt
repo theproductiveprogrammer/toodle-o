@@ -1,0 +1,6 @@
+# Toodle-O
++ show tags in simple search
++ support "x " in done
++ support defaulting to "-s" when it looks like a search
++ add ":doneon=<yyyy-mm-dd>" on done
++ add "- " to todo items in simple search
