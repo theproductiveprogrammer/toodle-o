@@ -699,7 +699,7 @@ def all_tags():
     entries = load()
     tags = set()
     for entry in entries:
-        if entry.tags:
+        if entry.tags and not entry.done:
             tags.update(entry.tags)
     tags = list(tags)
     tags.sort()
