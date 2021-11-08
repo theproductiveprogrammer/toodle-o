@@ -16,10 +16,7 @@ DEFAULT_TODO_FILE = os.path.expanduser("~/todo.txt")
 def main():
     try:
         c, ar = processCmdLineArgs()
-        if ar or ar == "":
-            c(ar)
-        else:
-            c()
+        c(ar)
     except Exception as e:
         print(str(e))
         raise
@@ -28,24 +25,48 @@ def main():
 ################################################################################
 # ARGV SECTION
 
-#   understand/
-# handle the command-line arguments and return
-# a tuple of (command, argument, error)
-def processCmdLineArgs():
-    if len(sys.argv) == 1:
-        return (showBriefHelp, None)
+class Args:
+    def __init__(self):
+        self.args = None
+        self.argv = None
+        self.files = []
 
-    cmd = sys.argv[1]
-    args = ' '.join(sys.argv[2:])
+    def setArgs(self, argv):
+        self.argv = argv
+        self.args = " ".join(self.argv)
+
+#   understand/
+# load the configuration, handle the command-line arguments
+# and return a tuple of (command, arguments)
+def processCmdLineArgs():
+    conf = loadConfig()
+    args = Args()
+
+    s = 1
+    while s < len(sys.argv) and sys.argv[s] in [ "-f" , "+f" ]:
+        if (s+1) < len(sys.argv):
+            args.files.append(sys.argv[s+1])
+        if sys.argv[s] == "+f":
+            args.files.extend(conf.files)
+        s += 2
+    if not args.files:
+        args.files = conf.files
+
+    if len(sys.argv) <= s:
+        return (showBriefHelp, args)
+
+    cmd = sys.argv[s]
+    args.setArgs(sys.argv[s+1:])
 
     if cmd == "+":
         return (add_todo, args)
 
     if not cmd.startswith("-"):
         if len(cmd) < 3: # user may have mistyped a -command
-            return (showBriefHelp, None)
+            return (showBriefHelp, args)
         else:
-            return (search, ' '.join(sys.argv[1:]))
+            args.setArgs(sys.argv[s:])
+            return (search, args)
 
     cmd = re.sub("^-+", "", cmd)
 
@@ -62,14 +83,12 @@ def processCmdLineArgs():
         return (search_copy, args)
 
     if cmd == "t":
-        if len(sys.argv) > 2:
-            raise Exception('"-t" cannot have any arguments')
-        return (tag_list, None)
+        return (tag_list, args)
 
     if cmd == "hh" or cmd == "man":
-        return (showDetailedHelp, None)
+        return (showDetailedHelp, args)
 
-    return (showBriefHelp, None)
+    return (showBriefHelp, args)
 
 ################################################################################
 # ADD SECTION
@@ -79,11 +98,11 @@ def processCmdLineArgs():
 # the appropriate file at the end of the
 # tag heading block or default to writing
 # to the HOME/todo.txt as a single line
-def add_todo(line):
+def add_todo(args):
     location = None
-    (tags, txt) = tagify(line)
+    (tags, txt) = tagify(args.args)
     if tags:
-        location = find_location(load(), tags)
+        location = find_location(load(args.files), tags)
     append_to_file(txt, tags, location)
 
 #       way/
@@ -151,9 +170,9 @@ def find_location(entries, tags):
 #       way/
 # update all matching entries, file-by-file,
 # by adding a 'x' in the beginning
-def mark_done(s):
-    todos = filter(load(), s)
-    words = s.split(' ')
+def mark_done(args):
+    todos = filter(load(args.files), args.args)
+    words = args.argv
     entries = dict()
     dt = " :doneon={0}".format(datetime.date.today().isoformat())
     for todo in todos:
@@ -244,9 +263,9 @@ def filter(todos, s):
 #       way/
 # filter all the todo's then show them
 # in a clean, minimal output
-def search(s):
-    todos = filter(load(), s)
-    words = s.split(' ')
+def search(args):
+    todos = filter(load(args.files), args.args)
+    words = args.argv
     for entry in todos:
         if entry.tags and "later" in entry.tags and ":later" not in words:
             continue
@@ -268,8 +287,8 @@ def search(s):
 # filter all the todo's then show them
 # in a valid todo format to copy into
 # another file
-def search_copy(s):
-    todos = filter(load(), s)
+def search_copy(args):
+    todos = filter(load(args.files), args.args)
 
     num_seen = 0
     for entry in reversed(todos):
@@ -320,8 +339,8 @@ def remove_tags_1(seen, entry):
 # filter all the todo's then show them
 # in a nice output along with all
 # the filenames
-def search_verbose(s):
-    todos = filter(load(), s)
+def search_verbose(args):
+    todos = filter(load(args.files), args.args)
     files = set()
     for entry in todos:
         files.add(entry.fname)
@@ -389,18 +408,6 @@ class Entry:
 
     def endnum(self):
         return getattr(self, "enum", self.lnum)
-
-#       understand/
-# add the "todo.txt" in the current directory (if it exists),
-# and the "todo.txt" in the user's HOME directory
-# and add the files specified in toodle-o.config
-def get_todo_files():
-    files = [ "todo.txt", DEFAULT_TODO_FILE ]
-    files = [ f for f in files if os.path.exists(f) ]
-
-    conf = loadConfig()
-
-    return files + conf.files
 
 
 #       understand/
@@ -696,9 +703,8 @@ def parse(f, todos):
 
 #       way/
 # parse the todo files and return the todos
-def load():
+def load(todofiles):
     todos = []
-    todofiles = get_todo_files()
     for f in todofiles:
         t = []
         parse(f, t)
@@ -710,6 +716,8 @@ def load():
 # load the configuration file
 def loadConfig():
     conf = Conf()
+    if os.path.exists(DEFAULT_TODO_FILE):
+        conf.files = [ DEFAULT_TODO_FILE ]
 
     conff = os.path.expanduser("~/toodle-o.conf")
     if os.path.exists(conff):
@@ -739,12 +747,12 @@ def loadConfig():
 ################################################################################
 # TAG SECTION
 
-def tag_list():
-    for tag in all_tags():
+def tag_list(args):
+    for tag in all_tags(args.files):
         print(tag)
 
-def all_tags():
-    entries = load()
+def all_tags(files):
+    entries = load(files)
     tags = set()
     for entry in entries:
         if entry.tags and not entry.done:
@@ -757,7 +765,7 @@ def all_tags():
 
 ################################################################################
 # HELP SECTION
-def showBriefHelp():
+def showBriefHelp(_):
     print("""tt: Toodle-O TODO Manager (v{0})
     $> tt + add todo :tag
     $> tt -s [:tag] [word]
@@ -770,7 +778,7 @@ Use -hh (or --man) to see detailed help
 """.format(VERSION))
 
 
-def showDetailedHelp():
+def showDetailedHelp(_):
     print("""tt: Toodle-O TODO Manager (v{0})
 
 Add a new todo (+)
