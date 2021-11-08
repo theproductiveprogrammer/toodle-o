@@ -6,6 +6,8 @@ import os
 ################################################################################
 # MAIN SECTION
 
+VERSION = "1.0.0"
+
 DEFAULT_TODO_FILE = os.path.join(os.path.expanduser("~"), "todo.txt")
 
 #   understand/
@@ -709,7 +711,7 @@ def all_tags():
 ################################################################################
 # HELP SECTION
 def showBriefHelp():
-    print("""tt: Toodle-O TODO Manager
+    print("""tt: Toodle-O TODO Manager (v{0})
     $> tt + add todo :tag
     $> tt -s [:tag] [word]
     $> tt -v [:tag] [word]
@@ -718,11 +720,11 @@ def showBriefHelp():
 
 Use -hh (or --man) to see detailed help
     $> tt -hh
-""")
+""".format(VERSION))
 
 
 def showDetailedHelp():
-    print("""tt: Toodle-O TODO Manager
+    print("""tt: Toodle-O TODO Manager (v{0})
 
 Add a new todo (+)
     $> tt + add a new todo
@@ -762,7 +764,7 @@ or, failing to find that, we will create and use a "todo.txt"
 file in the HOME directory.
 You can also provide a `toodle-o.list` file which contains,
 one on each line, a list of `todo` files scattered across various
-directories to process.""")
+directories to process.""".format(VERSION))
 
 ################################################################################
 
