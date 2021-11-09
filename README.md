@@ -138,6 +138,16 @@ $> tt -ss eggs
 Buy Eggs
 ```
 
+You can search for items _not_ matching a tag or word using `^`:
+
+```sh
+$> tt -ss :shopping ^:supermarket ^eggs
+Butter
+Cheese
+Bread
+Bacon
+```
+
 To get the list of tags:
 
 ```sh
