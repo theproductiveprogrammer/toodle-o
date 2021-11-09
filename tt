@@ -183,7 +183,7 @@ def find_location(entries, tags):
 # update all matching entries, file-by-file,
 # by adding a 'x' in the beginning
 def mark_done(args):
-    todos = filter(load(args.files), args.args)
+    todos = filter(load(args.files), args.argv)
     words = args.argv
     entries = dict()
     dt = " :doneon={0}".format(datetime.date.today().isoformat())
@@ -227,49 +227,84 @@ def mark_done(args):
 ################################################################################
 # SEARCH SECTION
 
-#       understand/
-# find a todo that matches ANY of the tags
-# and ALL of the words
-def filter(todos, s):
-    (tags, txt) = tagify(s)
-    words = txt.split(' ')
-    tags.extend([t for t in words if t == ":"])
-    words = [w for w in words if w != ":"]
+class Filter:
+    def __init__(self, a):
+        pos = [w.lower() for w in a if not w.startswith("^")]
+        neg = [w[1:].lower() for w in a if w.startswith("^")]
 
+        self.tags = [t[1:] for t in pos if t.startswith(":")]
+        self.xtags = [t[1:] for t in neg if t.startswith(":")]
+        self.words = [w for w in pos if not w.startswith(":")]
+        self.xwords = [w for w in neg if not w.startswith(":")]
+
+    #   way/
+    # the entry has to match any tag and all words
+    # and NOT match any negative tags or words
+    def allows(self, entry):
+        if('hopping' in entry.tags):
+            print(self.tags, self.words, self.xtags, self.xwords)
+            print("matches tags: " + str(self.matches_tags(self.tags, entry)))
+            print("matches words: " + str(self.matches_words(entry)))
+            print("matches xtags: " + str(self.xtags and self.matches_tags(self.xtags, entry)))
+            print("matches xwords: " + str(self.matches_xwords(entry)))
+        return (
+                self.matches_tags(self.tags, entry)
+                and self.matches_words(entry)
+                and not (self.xtags and self.matches_tags(self.xtags, entry))
+                and not self.matches_xwords(entry)
+                )
+
+    @staticmethod
     def matches_tags(tags, entry):
         if not tags:
             return True
         for tag in tags:
-            if tag == ":" and not entry.tags:
-                return True
             if entry.tags:
                 ets = [t.split("=")[0] for t in entry.tags]
                 if tag in ets:
                     return True
+            else:
+                if tag == ":":
+                    return True
         return False
 
-    def matches_words(words, entry):
-        w = []
-        if entry.item:
-            w = re.split("\W+", entry.item)
-        elif entry.note:
-            w = re.split("\W+", entry.note)
-        if entry.tags:
-            w.extend(entry.tags)
-        for word in words:
+    def matches_words(self, entry):
+        words = self.entrywords(entry)
+        for word in self.words:
             match = False
-            for i in w:
-                if i.lower().startswith(word.lower()):
+            for w in words:
+                if w.startswith(word):
                     match = True
             if not match:
                 return False
         return True
 
-    ret = []
-    for entry in todos:
-        if matches_tags(tags, entry) and matches_words(words, entry):
-            ret.append(entry)
-    return ret
+    def matches_xwords(self, entry):
+        words = self.entrywords(entry)
+        for word in self.xwords:
+            match = False
+            for w in words:
+                if w.startswith(word):
+                    return True
+        return False
+
+    @staticmethod
+    def entrywords(entry):
+        words = []
+        if entry.item:
+            words = re.split("\W+", entry.item.lower())
+        elif entry.note:
+            words = re.split("\W+", entry.note.lower())
+        if entry.tags:
+            words.extend(entry.tags)
+        return words
+
+#       understand/
+# find a todo that matches ANY of the tags
+# and ALL of the words
+def filter(todos, a):
+    fltr = Filter(a)
+    return [t for t in todos if fltr.allows(t)]
 
 
 def simple_search(args):
@@ -292,7 +327,7 @@ def super_simple_search(args):
 #       way/
 # get all active todo's matching the criteria
 def search(args):
-    todos = filter(load(args.files), args.args)
+    todos = filter(load(args.files), args.argv)
     words = args.argv
 
     def isactive(entry):
@@ -314,7 +349,7 @@ def search(args):
 # in a valid todo format to copy into
 # another file
 def search_copy(args):
-    todos = filter(load(args.files), args.args)
+    todos = filter(load(args.files), args.argv)
 
     num_seen = 0
     for entry in reversed(todos):
@@ -366,7 +401,7 @@ def remove_tags_1(seen, entry):
 # in a nice output along with all
 # the filenames
 def search_verbose(args):
-    todos = filter(load(args.files), args.args)
+    todos = filter(load(args.files), args.argv)
     files = set()
     for entry in todos:
         files.add(entry.fname)
