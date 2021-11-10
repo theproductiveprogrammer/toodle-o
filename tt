@@ -42,24 +42,44 @@ def processCmdLineArgs():
     conf = loadConfig()
     args = Args()
 
-    if len(sys.argv) == 1:
+    argv_ = sys.argv[1:]
+
+    if not argv_:
         return (showBriefHelp, args)
 
-    s = 1
-    while s < len(sys.argv) and sys.argv[s] in [ "-f" , "+f" ]:
-        if (s+1) < len(sys.argv):
-            args.files.append(sys.argv[s+1])
-        if sys.argv[s] == "+f":
+    cmd = None
+    argv = []
+    state = None
+    for a in argv_:
+        if state == "args":
+            argv.append(a)
+            continue
+        if state == "add_f":
+            state = None
+            args.files.append(a)
+        elif state == "add_f+":
+            state = None
+            args.files.append(a)
             args.files.extend(conf.files)
-        s += 2
+        else:
+            if a == "--":
+                state = "args"
+            elif a == "-f":
+                state = "add_f"
+            elif a == "+f":
+                state = "add_f+"
+            else:
+                if not cmd:
+                    cmd = a
+                argv.append(a)
+
     if not args.files:
         args.files = conf.files
 
-    if len(sys.argv) <= s:
+    if not argv:
         return (simple_search, args)
 
-    cmd = sys.argv[s]
-    args.setArgs(sys.argv[s+1:])
+    args.setArgs(argv[1:])
 
     if cmd == "+":
         return (add_todo, args)
@@ -72,7 +92,7 @@ def processCmdLineArgs():
         if len(cmd) < 3: # user may have mistyped a -command
             return (showBriefHelp, args)
         else:
-            args.setArgs(sys.argv[s:])
+            args.setArgs(argv)
             return (simple_search, args)
 
     cmd = re.sub("^-+", "", cmd)
