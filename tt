@@ -7,7 +7,7 @@ import datetime
 ################################################################################
 # MAIN SECTION
 
-VERSION = "1.5.0"
+VERSION = "1.5.1"
 
 DEFAULT_TODO_FILE = os.path.expanduser("~/todo.txt")
 
