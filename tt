@@ -47,6 +47,16 @@ def processCmdLineArgs():
     if not argv_:
         return (showBriefHelp, args)
 
+    if len(argv_) == 1:
+        try:
+            f = os.path.expanduser(argv_[0])
+            if os.path.exists(f):
+                args.files.append(f)
+                return (simple_search, args)
+        except:
+            pass
+
+
     cmd = None
     argv = []
     state = None
