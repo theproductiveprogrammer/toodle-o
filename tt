@@ -265,7 +265,14 @@ def edit_matching(args):
     files = list(set([t.fname for t in todos]))
     EDITOR = os.environ.get('EDITOR', 'vim')
     cmd = [EDITOR] + files
-    subprocess.call(cmd)
+    try:
+        subprocess.call(cmd)
+    except:
+        print("Failed to open editor: " + EDITOR)
+        print("")
+        pass;
+    for f in files:
+        print(f)
 
 
 ################################################################################
