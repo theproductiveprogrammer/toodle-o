@@ -932,8 +932,12 @@ files.
 Use a different file instead:
     $> tt -f /use/this.txt
 
-Or add a new file to process for now:
-    $> tt +f /use/additional.txt""".format(VERSION, DEFAULT_TODO_FILE))
+Or add a new file to process for this call:
+    $> tt +f /use/additional.txt
+
+Finally, we can open all matching files to manually edit:
+    $> tt -e :shopping
+This will use the $EDITOR environment variable or 'vim'.""".format(VERSION, DEFAULT_TODO_FILE))
 
 ################################################################################
 

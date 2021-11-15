@@ -164,6 +164,13 @@ $> tt -x :shopping eggs
 x Buy Eggs
 ```
 
+To manually edit all matching files:
+
+```sh
+$> tt -e :shopping eggs
+# opens using the $EDITOR or vim by default
+```
+
 
 
 ----
