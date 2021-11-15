@@ -3,6 +3,7 @@ import sys
 import re
 import os
 import datetime
+import subprocess
 
 ################################################################################
 # MAIN SECTION
@@ -106,6 +107,9 @@ def processCmdLineArgs():
             return (simple_search, args)
 
     cmd = re.sub("^-+", "", cmd)
+
+    if cmd == "e":
+        return (edit_matching, args)
 
     if cmd == "s":
         return (simple_search, args)
@@ -253,6 +257,16 @@ def mark_done(args):
 
 
 
+#       way/
+# Find all files with matching entries
+# and open them in the default EDITOR/vim
+def edit_matching(args):
+    todos = filter(load(args.files), args.argv)
+    files = list(set([t.fname for t in todos]))
+    EDITOR = os.environ.get('EDITOR', 'vim')
+    cmd = [EDITOR] + files
+    subprocess.call(cmd)
+
 
 ################################################################################
 # SEARCH SECTION
@@ -328,6 +342,7 @@ class Filter:
         if entry.tags:
             words.extend(entry.tags)
         return words
+
 
 #       understand/
 # find a todo that matches ANY of the tags
